@@ -1,0 +1,39 @@
+<div class="navbar">
+    <a class="site-title" href="{{ site.url }}/">{{ site.title }}</a>
+
+    <ul class="pull-right">
+        <li class="pull-left" style="display: flex; align-items: center;">
+            <script>
+                function toggleTheme() {
+                    const body = document.body;
+                    if (body.classList.contains('dark-theme')) {
+                        const themeIcon = document.getElementById('theme-icon');
+                        body.classList.remove('dark-theme');
+                        localStorage.setItem('theme', 'light');
+                    } else {
+                        const themeIcon = document.getElementById('theme-icon');
+                        body.classList.add('dark-theme');
+                        localStorage.setItem('theme', 'dark');
+                    }
+                }
+            </script>
+            <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer; padding: 0;">
+                <img class="dark-theme-icon" src="/assets/darkness.png" alt="Toggle Theme" style="width: 20px; height: 20px; margin: 0px; filter: var(--accent-filter);">
+                <img class="light-theme-icon" src="/assets/brightness.png" alt="Toggle Theme" style="width: 20px; height: 20px; margin: 0px; filter: var(--accent-filter);">
+            </button>
+        </li>
+        {% for x in site.navbar %}
+        <li class="pull-left" style="display: flex; align-items: center;">
+            {% if x.absolute-link %}
+                {% assign x-url = x.absolute-link %}
+            {% else %}
+                {% assign x-url = site.url | append: "/" | append: x.link %}
+            {% endif %}
+            <a href="{{ x-url }}">{{ x.name }}</a>
+            {% if forloop.last == false %}/{% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <hr>
+</div>

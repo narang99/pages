@@ -1,0 +1,16 @@
+// @use "code_light" as light;
+@use "sass:meta";
+// @use "code_dark" as dark;
+
+.highlight {
+  @at-root {
+    :root & {
+        @include meta.load-css("code_light");
+    }
+
+    body.dark-theme & {
+        @include meta.load-css("code_dark");
+    }
+
+  }
+}
