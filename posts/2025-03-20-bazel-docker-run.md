@@ -3,6 +3,8 @@ title: container_run_and_commit with rules_oci
 description: Fake the RUN Dockerfile instruction with bazel
 categories: [Bazel, Docker]
 date: 'March 20, 2025'
+aliases:
+  - /2025-03-20-bazel-docker-run
 ---
 
 If you have used bazel, chances are, you are using it to generate your docker images. There are two rules which enable this: [rules_docker](https://github.com/bazelbuild/rules_docker) and [rules_oci](https://github.com/bazel-contrib/rules_oci)   

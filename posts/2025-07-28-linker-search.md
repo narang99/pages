@@ -5,6 +5,8 @@ categories: [linkers, python]
 toc: true
 author: Hariom Narang
 date: 'July 28, 2025'
+aliases:
+  - /2025-07-28-linker-search
 ---
 
 Recently, while working at my previous company, I had gotten interested in packaging my Python application. The goal was to create a self-contained directory that would be able to run our application on any machine (which won't have Python installed as well).  

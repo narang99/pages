@@ -4,6 +4,8 @@ description: why do we really need ownership in rust?
 categories: [Coding, Rust]
 author: Hariom Narang
 date: 'September 29, 2023'
+aliases:
+  - /2023-09-29-why-rust-ownership
 ---
 
 **NOTE: This is an old post that I've transferred here, the original post is [here in medium](https://medium.com/@hariom.2711/rust-ownership-from-scratch-7cbb1369aebe). The blog post date is the date when I originally posted it, although I moved it here in Oct. 2024**  

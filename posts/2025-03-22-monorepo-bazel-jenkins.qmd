@@ -5,6 +5,8 @@ categories: [Jenkins, Bazel, CI]
 author: Hariom Narang
 date: 'March 22, 2025'
 toc: true
+aliases:
+  - /2025-03-22-monorepo-bazel-jenkins
 ---
 
 Adopting a monorepo directly corresponds to huge investments in the CI infrastructure for an organization. This is simply because there is no open-source solution which works with monorepos out-of-the-box.  

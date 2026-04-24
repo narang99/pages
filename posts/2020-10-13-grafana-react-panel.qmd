@@ -4,6 +4,8 @@ author: Hariom Narang
 description: developing a basic custom Graph Panel plugin for Grafana
 categories: [Coding]
 date: 'October 13, 2020'
+aliases: 
+  - /2020-10-13-grafana-react-panel
 ---
 
 **NOTE: This is an old post that I've transferred here, the original post is [here in medium](https://medium.com/@hariom.2711/grafana-react-panel-plugins-545cb9afa42d). The blog post date is the date when I originally posted it, although I moved it here in Oct. 2024**  

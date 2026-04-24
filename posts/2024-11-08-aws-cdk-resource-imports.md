@@ -4,6 +4,8 @@ description: Things to look out for when importing resources in AWS CDK
 categories: [AWS, CloudFormation, AWS-CDK]
 author: Hariom Narang
 date: 'November 8, 2024'
+aliases:
+  - /2024-11-08-aws-cdk-resource-imports
 ---
 
 [AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/home.html) is an amazing toolkit for managing cloud infrastructure, especially when you do not have any dedicated infrastructure teams. That being said, the abstraction can sometimes have unexpected side effects.  

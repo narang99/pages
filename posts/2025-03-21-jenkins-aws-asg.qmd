@@ -4,6 +4,8 @@ description: a cached autoscaling jenkins agent setup
 categories: [Jenkins, AWS, CI]
 author: Hariom Narang
 date: 'March 21, 2025'
+aliases:
+  - /2025-03-21-jenkins-aws-asg
 ---
 
 [EC2 Fleet](https://plugins.jenkins.io/ec2-fleet/) is an amazing Jenkins plugin which allows you to use AWS Autoscaling Groups as agents. Many mid-sized companies (which don't have many 24x7 developers working) have very fluctuating requirements for their CI systems. This makes EC2 Fleet a very cost-effective option. Consult the plugin documentation for setting it up, I'm not going to discuss that in this blog  
