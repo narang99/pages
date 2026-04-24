@@ -1,0 +1,400 @@
+/*-- scss:defaults --*/
+
+// Gruvbox Material Dark Medium Color Palette
+$bg0: #292929;
+$bg1: #32302f;
+$bg2: #32302f;
+$bg3: #45403d;
+$bg4: #45403d;
+$bg5: #5a524c;
+$bg_statusline1: #32302f;
+$bg_statusline2: #3a3735;
+$bg_statusline3: #504945;
+$bg_diff_green: #34381b;
+$bg_visual_green: #3b4439;
+$bg_diff_red: #402120;
+$bg_visual_red: #4c3432;
+$bg_diff_blue: #0e363e;
+$bg_visual_blue: #374141;
+$bg_visual_yellow: #4f422e;
+$bg_current_word: #45403d;
+
+$fg0: #d4be98;
+$fg1: #ddc7a1;
+$red: #ea6962;
+$orange: #e78a4e;
+$yellow: #d8a657;
+$green: #a9b665;
+$aqua: #89b482;
+$blue: #7daea3;
+$purple: #d3869b;
+$grey0: #7c6f64;
+$grey1: #928374;
+$grey2: #a89984;
+
+// Bootstrap Variable Overrides
+$body-bg: $bg0;
+$body-color: $fg1;
+$text-color: $fg1;
+
+$primary: $bg0;
+$secondary: $bg1;
+$success: $green;
+$info: $aqua;
+$warning: $yellow;
+$danger: $red;
+$light: $bg5;
+$dark: $bg1;
+
+// Typography
+$font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$font-size-base: 1rem;
+$line-height-base: 1.6;
+
+$headings-color: $fg0;
+$headings-font-weight: 600;
+
+// Links
+$link-color: $blue;
+$link-hover-color: lighten($blue, 15%);
+$link-decoration: none;
+$link-hover-decoration: underline;
+
+// Code
+$code-color: $orange;
+$code-bg: $bg1;
+$pre-color: $fg1;
+
+// Cards and containers
+$card-bg: $bg1;
+$card-border-color: $bg3;
+
+// Navigation
+$navbar-bg: $bg1;
+$navbar-dark-color: rgba($fg1, 0.85);
+$navbar-dark-hover-color: $fg0;
+$navbar-dark-active-color: $fg0;
+$navbar-dark-disabled-color: rgba($fg1, 0.25);
+$navbar-dark-toggler-border-color: rgba($fg1, 0.1);
+
+$navbar-light-color: rgba($fg1, 0.85);
+$navbar-light-hover-color: $fg0;
+$navbar-light-active-color: $fg0;
+$navbar-light-disabled-color: rgba($fg1, 0.3);
+
+// Tables
+$table-bg: transparent;
+$table-color: $fg1;
+$table-border-color: $bg3;
+$table-striped-bg: $bg1;
+$table-hover-bg: $bg2;
+
+// Borders
+$border-color: $bg3;
+$border-radius: 0.375rem;
+
+// Buttons
+$btn-border-radius: $border-radius;
+$btn-font-weight: 500;
+
+// Forms
+$input-bg: $bg1;
+$input-border-color: $bg3;
+$input-color: $fg1;
+$input-focus-border-color: $blue;
+$input-placeholder-color: $grey1;
+
+// Pagination
+$pagination-bg: $bg1;
+$pagination-border-color: $bg3;
+$pagination-hover-bg: $bg2;
+$pagination-active-bg: $primary;
+
+// Dropdowns
+$dropdown-bg: $bg1;
+$dropdown-border-color: $bg3;
+$dropdown-color: $fg1;
+$dropdown-link-color: $fg1;
+$dropdown-link-hover-color: $fg0;
+$dropdown-link-hover-bg: $bg2;
+
+// Modals
+$modal-content-bg: $bg0;
+$modal-content-border-color: $bg3;
+$modal-header-border-color: $bg3;
+$modal-footer-border-color: $bg3;
+
+/*-- scss:rules --*/
+
+// Global dark theme styling
+html {
+  background-color: $bg0;
+}
+
+body {
+  background-color: $bg0;
+  color: $fg1;
+}
+
+// Enhanced code styling
+// code {
+//   background-color: $bg2;
+//   color: $orange;
+//   padding: 0.125rem 0.25rem;
+//   border-radius: 0.25rem;
+// }
+
+// pre {
+//   background-color: $bg2 !important;
+//   border: 1px solid $bg3 !important;
+//   border-radius: 0.375rem;
+//   padding: 1rem;
+//   margin: 1rem 0;
+//   overflow-x: auto;
+  
+//   code {
+//     background-color: transparent !important;
+//     padding: 0;
+//     color: $fg1;
+//   }
+// }
+
+// // Fix for syntax highlighted code blocks
+// .sourceCode {
+//   background-color: $bg2 !important;
+//   border: 1px solid $bg3 !important;
+//   border-radius: 0.375rem;
+//   overflow-x: auto;
+  
+//   pre {
+//     background-color: transparent !important;
+//     border: none !important;
+//     margin: 0;
+//     padding: 1rem;
+//   }
+// }
+
+// Ensure Quarto code blocks use theme colors
+div.sourceCode {
+  background-color: $bg2 !important;
+  border: 1px solid $bg3 !important;
+}
+
+
+// Blockquotes
+blockquote {
+  border-left: 4px solid $blue;
+  background-color: $bg1;
+  padding: 1rem;
+  margin: 1rem 0;
+  
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// Enhanced table styling
+table {
+  background-color: transparent;
+  
+  th {
+    background-color: $bg2;
+    border-color: $bg3;
+    color: $fg0;
+  }
+  
+  td {
+    border-color: $bg3;
+  }
+}
+
+// Card enhancements
+.card {
+  background-color: $bg1;
+  border-color: $bg3;
+  
+  .card-header {
+    background-color: $bg2;
+    border-bottom-color: $bg3;
+  }
+  
+  .card-footer {
+    background-color: $bg2;
+    border-top-color: $bg3;
+  }
+}
+
+// Navigation enhancements
+.navbar {
+  background-color: $bg3 !important;
+  border-bottom: 1px solid $bg3;
+  
+  .navbar-brand {
+    color: $fg0 !important;
+    font-weight: 600;
+  }
+  
+  .nav-link {
+    color: $fg1 !important;
+    
+    &:hover {
+      color: $blue !important;
+    }
+  }
+}
+
+// Header/Banner styling
+header, .quarto-title-banner {
+  background-color: $bg0 !important;
+}
+
+// Quarto title styling
+.quarto-title .title {
+  color: $fg0 !important;
+}
+
+h1.title {
+  color: $fg0 !important;
+}
+
+.quarto-title-block .quarto-title {
+  color: $fg0 !important;
+}
+
+// Sidebar styling for websites
+.sidebar {
+  background-color: $bg0;
+  border-left: 1px solid $bg3;
+  padding-left: 10px;
+  
+  .nav-link {
+    color: $fg1;
+    
+    &:hover {
+      background-color: $bg2;
+      color: $blue;
+    }
+    
+    &.active {
+      background-color: $bg3;
+      color: $fg0;
+    }
+  }
+}
+
+// Footer styling
+footer {
+  background-color: $bg1;
+  border-top: 1px solid $bg3;
+  color: $grey1;
+}
+
+// Callout styling
+.callout {
+  border-left-width: 4px;
+  border-left-style: solid;
+  background-color: $bg1;
+  
+  &.callout-note {
+    border-left-color: $blue;
+  }
+  
+  &.callout-warning {
+    border-left-color: $yellow;
+  }
+  
+  &.callout-important {
+    border-left-color: $red;
+  }
+  
+  &.callout-tip {
+    border-left-color: $green;
+  }
+  
+  &.callout-caution {
+    border-left-color: $orange;
+  }
+}
+
+// Search styling
+.aa-Form {
+  background-color: $bg1 !important;
+  border-color: $bg3 !important;
+}
+
+.aa-Input {
+  background-color: transparent !important;
+  color: $fg1 !important;
+}
+
+.navbar-toggler {
+  border-color: rgba($fg1, 0.1) !important;
+}
+
+// Search icons
+#quarto-search .search-icon {
+  color: $fg1 !important;
+}
+
+.quarto-search-icon {
+  // color: $fg1 !important;
+  fill: currentColor;
+}
+
+// Theme switcher
+.quarto-color-scheme-toggle {
+  // color: $fg1 !important;
+  fill: currentColor;
+}
+
+.quarto-color-scheme-toggle:hover {
+  color: $blue !important;
+}
+
+// Bootstrap Icons
+.bi {
+  color: $fg1 !important;
+}
+
+.bi::before {
+  color: $fg1 !important;
+}
+
+.aa-SubmitIcon {
+  color: $text-color !important;
+}
+.bi:hover {
+  color: $blue !important;
+}
+
+// Search button specific
+#quarto-search .bi {
+  color: $fg1 !important;
+}
+
+// Navigation toggle
+.navbar-toggler {
+  color: $fg1 !important;
+}
+
+// Ensure proper contrast for accessibility
+a:focus,
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid $blue;
+  outline-offset: 2px;
+}
+
+
+
+.quarto-color-scheme-toggle > .bi::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"  fill="#{colorToRGBA(theme-dim($text-color, 10%))}" class="bi bi-toggle-off" viewBox="0 0 16 16"><path d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8"/></svg>') !important;
+}
+
+
+
+.navbar-toggler-icon {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#{colorToRGBA(theme-dim($text-color, 10%))}" class="bi bi-list" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/></svg>') !important;
+}

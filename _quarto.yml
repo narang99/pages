@@ -1,0 +1,27 @@
+project:
+  type: website
+
+website:
+  site-url: https://pages.narang99.in  # you must change this appropriately for RSS feeds to work properly
+  title: "Hariom Narang's Pages"
+  navbar:
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/narang99
+format:
+  html:
+    toc: true
+    css:
+      - styles.css
+    highlight-style:
+      light: gruvbox
+    mathjax: true
+    theme:
+      # {}
+      # light: cosmo
+      # light: litera
+      # light: spacelab
+      # light: [simplex]
+      # dark: [cyborg]
+      light: [./styles/gruvbox-material-light.scss]
