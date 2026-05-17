@@ -17,6 +17,9 @@ format:
     highlight-style:
       light: gruvbox
     mathjax: true
+    include-in-header: 
+      - text: |
+          <script data-goatcounter="https://narang99.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
     theme:
       # {}
       # light: cosmo
