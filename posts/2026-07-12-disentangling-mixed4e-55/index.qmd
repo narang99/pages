@@ -965,3 +965,8 @@ Inputs.table(label_by_threshold, {
   - `0` [Cluster Report](./reports/clusters/mixed4d_5x5_pre_relu_conv/0/index.html)
   - `10` [Cluster Report](./reports/clusters/mixed4d_5x5_pre_relu_conv/10/index.html)
   - `27` [Cluster Report](./reports/clusters/mixed4d_5x5_pre_relu_conv/27/index.html)
+
+
+---
+
+*Thanks to Shreya Rai for patiently listening to my many different and wrong theories, and to Paarth Dassani for feedback on this approach and the article. The dependency report generation code was mostly written by Claude Sonnet 5.0 (using Claude Code). A lot of research was done with Claude and Gemini.*
