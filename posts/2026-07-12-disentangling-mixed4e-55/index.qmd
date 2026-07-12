@@ -137,7 +137,7 @@ Taken together however, we can make reasonable guesses about what the input patt
 
 There are many problems however, with this manual approach of assigning a concept to each number.  
 
-- It is very laborious and can't scale. It also gets very boring after an initial wonder.  
+- It is very laborious and can't scale. It also gets very boring after the initial novelty wears off.
 - Labeling manually is also very subjective, do you keep a diagonal at 45 degrees in the same label as a diagonal at 50 degrees?  
 - Perhaps the biggest problem is that convolutional kernels are 3D, not 2D. It is quite hard to spot patterns in this case.  
 
@@ -225,7 +225,7 @@ Absence of any overlay/color means that the attribution of that pixel is close t
 For the examples above, we see bright green spots on the snouts of these animals.  
 :::
 
-For our work here, we have used DeepLIFT because its quality is comparable to Integrated Gradients and is substantially faster (see [NeuronDeepLift](https://captum.ai/api/neuron.html#neuron-deeplift)).  
+For these overlays specifically — a separate step from the clustering-attribution filter described above — we have used DeepLIFT because its quality is comparable to Integrated Gradients and is substantially faster (see [NeuronDeepLift](https://captum.ai/api/neuron.html#neuron-deeplift)).
 
 
 
@@ -857,7 +857,7 @@ There are other neurons too; we ask the reader to take a look at them in the rep
 - mixed4d_1x1_pre_relu_conv:22
 - mixed4d_pool_reduce_pre_relu_conv:29
 
-Nevertheless, the bigger story seems clean: there is an overwhelming majority with cat-like or dog-like faces.
+Even so, the bigger story seems clean: there is an overwhelming majority with cat-like or dog-like faces.
 
 ## "human faces": a cluster which does not give maximum activation
 
