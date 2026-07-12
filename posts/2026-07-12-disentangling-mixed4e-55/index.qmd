@@ -102,14 +102,14 @@ There is a simple and elegant machinery here to detect a curve in the above imag
 
 ::: {.callout-caution}
 Layer 2, Kernel 0 has shape `[8,3,3]` (8 in-channels). It is technically a "cube". I have only shown the intermediate output of the 5th channel inside this `[8,3,3]` kernel.  
-I made the classic mistake of visualising and analysing a 3D convolutional kernel by splitting it into 2D slices and checking their outputs. This is quite dangerous as it simply assigns a humane interpretation on what the kernel is doing (we see the world of images in 2D structures). This approach of looking at slices is incorrect.  
+I made the classic mistake of visualising and analysing a 3D convolutional kernel by splitting it into 2D slices and checking their outputs. This is quite dangerous as it simply assigns a human interpretation on what the kernel is doing (we see the world of images in 2D structures). This approach of looking at slices is incorrect.  
 
 Nevertheless, the example is quite interesting in itself and is useful in motivating a way for analysing the network.   
 :::
 
 
 
-Let's take a closer look at the `L` in `figure (c)`, focusing on the white box. We will not look at any of the full "images" (activations or the original input image). We would instead, like to think like a convolutional kernel, and only observe what a kernel notices in a set of operations.  
+Let's take a closer look at the `L` in `figure (c)`, focusing on the white box. We will not look at any of the full "images" (activations or the original input image). We would instead like to think like a convolutional kernel, and only observe what a kernel notices in a set of operations.
 
 Some notation is helpful for the next discussion.   
 
@@ -169,7 +169,7 @@ In this article, the Hadamard Product is used interchangeably with the phrase "p
 
 
 There is one more engineering challenge. The dataset for clustering for a given neuron would be huge, even for a modest number of images. It is not feasible to cluster them all. To address this, we filter the dataset to retain only points with high attribution for the target class.  
-We are here making an assumption that points with low attribution are "noise" and thus can be ignored.  
+We assume here that points with low attribution are "noise" and thus can be ignored.
 
 ---
 
@@ -177,14 +177,14 @@ This article is only about labeling. We will see that we get remarkably far by j
 
 
 ::: {.callout-note collapse="true" title="On dictionary learning"}
-The literature is filled with examples of people trying to find patterns out of activations of a layer. Clustering has not given good results in this specific endeavor.  
-The dominant position in the field is to use Dictionary Learning [@OLSHAUSEN19973311] to decompose an activation into a sparse linear combination of a set of basis vectors. Each basis vector encapsulates a "meaning" or a "concept".   
+The literature is filled with examples of people trying to find patterns out of activations of a layer. Clustering directly on raw activations has not given good results in this specific endeavor.
+The dominant position in the field is to use Dictionary Learning [@OLSHAUSEN19973311] to decompose an activation into a sparse linear combination of a set of basis vectors. Each basis vector encapsulates a "meaning" or a "concept".
 
-Dictionary learning is really good at reconstructing all the examples in a dataset, it is quite resistant to noise and therefore is a very attractive option. The main problem is that dictionary learning can give multiple non-zero coefficients for reconstructing a single example. This is hard to reason about in terms of disentanglement.  
+Dictionary learning is really good at reconstructing all the examples in a dataset, it is quite resistant to noise and therefore is a very attractive option. The main problem is that dictionary learning can give multiple non-zero coefficients for reconstructing a single example. This is hard to reason about in terms of disentanglement.
 
-It turns out that simple clustering does work well. It is also very interpretable. A single label, for each concept, is perfect for disentanglement. An added advantage is that clustering is significantly faster than Dictionary Learning.  
+It turns out that our approach — clustering the Hadamard product rather than raw activations — does work well. It is also very interpretable. A single label, for each concept, is perfect for disentanglement. An added advantage is that clustering is significantly faster than Dictionary Learning.
 
-We will see however, that clustering might not be the right answer in the end. It has marked many patterns as noise simply because of the curse of dimensionality. It does however, give us more data about a neuron, in a very efficient way.  
+We will see however, that our clustering might not be the right answer in the end. It has marked many patterns as noise simply because of the curse of dimensionality. It does however, give us more data about a neuron, in a very efficient way.
 
 :::
 
@@ -209,8 +209,9 @@ All experiments use a filtered subset of the [ImageNet-1K](https://huggingface.c
 - **Identify high-attribution points.** For each ImageNet category, find a positive and negative attribution threshold independently using the elbow method. There is no global threshold — each category is thresholded separately. Since the downstream clustering algorithm handles noise, the threshold only needs to coarsely filter out low-attribution points; it does not need to be precise. More details in the [Appendix](#on-attribution-thresholds).  
 
 - **Extract the dataset.** For each high-attribution activation, extract the corresponding input patch of shape `[C_in, K, K]`, where `C_in` is the number of input channels and `K` is the kernel size — this patch represents the local receptive field of that spatial location. Take the Hadamard product of each extracted patch with the neuron's learned weights, flatten, and L2-normalize the result. These vectors form our dataset $\mathcal{D}$.
-  - Specifically `sklearn.preprocessing.normalize(data, "l2")` was used for normalizing. Clustering results are not good without this normalization.  
-  - Dimensionality reduction like PCA and UMAP have tendencies to give uninterpretable and bad clusters, these are not therefore not used for any preprocessing.  
+  - Specifically `sklearn.preprocessing.normalize(data, "l2")` was used for normalizing. Clustering results are not good without this normalization.
+  - Dimensionality reduction like PCA and UMAP have tendencies to give uninterpretable and bad clusters, these are not therefore not used for any preprocessing.
+  - We will see why L2-normalization was important for getting good cluster results [later in the article](#analysing-the-connection-with-the-previous-layer).
 
 - **Cluster.** Run a clustering algorithm (HDBSCAN [@10.1007/978-3-642-37456-2_14]) over $\mathcal{D}$. Each point is assigned a cluster label, with `-1` reserved for noise.
   - HDBSCAN  was used with the settings `cluster_selection_method=leaf`. The `eom` method was observed to collapse different categories into the same cluster. `min_cluster_size` was tweaked to get "good" clusters.  
@@ -417,7 +418,7 @@ The results are quite surprising.
 - The number of total points in a cluster generally exceeds the number of unique images in that cluster for many cases, meaning the same label is found multiple times within a single image. This is analogous to a diagonal edge detector activating multiple times along a long diagonal.
 
 
-There is one notable concern right now:
+There is one notable concern:
 
 - The majority of points were marked as noise — specifically 239,060 points.   
   - The raw pointwise multiplication vectors reveal very clean clusters, which makes the sheer volume of noise all the more concerning. Is this a coincidence? We address this in the next section.
@@ -446,12 +447,12 @@ All is not well, however. Our model consistently categorises the feature visuali
 ::: {.callout-important}
 
 
-As with all unsupervised learning approaches, there are challenges with clustering here too. We consistently observe that the clusters are not reporting all the points for a given cluster. It is too strict and puts a lot of data in noise.   
-Whether clustering is the right tool for this job is a question we are not going to explore in this article.   
-It does give us more data on analysing the behavior of a specific neuron, which will be the topic of the next sections.  
+As with all unsupervised learning approaches, there are challenges with clustering here too. We consistently observe that HDBSCAN fails to recover all the points belonging to a given cluster. It is too strict and puts a lot of data in noise.
+Whether clustering is the right tool for this job is a question we are not going to explore in this article.
+It does give us more data on analysing the behavior of a specific neuron, which will be the topic of the next sections.
 
-Since clustering is not reporting all the points for any given cluster, we analyse the behavior of clusters across many example images, instead of using a single image. As an example, if you want to check which neurons fired before a certain neuron, you won't get the full list (or even close to the full list) on just analysing a single neuron.  
-It is easier to analyse which clusters are activated in all the dependencies when a single cluster is activated for said neuron, across different examples.   
+Since clustering misses points for any given cluster, we analyse the behavior of clusters across many example images, instead of using a single image. As an example, if you want to check which neurons fired before a certain neuron, you won't get the full list (or even close to the full list) on just analysing a single neuron.
+Looking at a single cluster across many examples, instead of a single example, gives us a much more complete picture of which previous-layer neurons it depends on.
 
 
 For a given random sample, we also use cosine similarity to find the closest cluster as a proxy. This can give varied results, since the similarity number is not very reliable. All reports that do this include the samples alongside their closest matches. Readers should inspect the matches by eye to judge whether it is a true match or just noise.
@@ -897,7 +898,11 @@ Putting this together, for `mixed4e_1x1_pre_relu_conv:55` we can conclude that i
 
 The simpler statement, that "maximum" is a sign of activation, is starting to hold up again.
 
-A surprising result for us was the really large number of neurons activating for every pattern with similar concepts. Since so many neurons are used to identify the signal, the network seems to rely on something like a law-of-large-numbers effect: even if some signals are "fake," or some neurons are accidentally inhibited, the overall majority makes up for it. This fits well with what a convolutional kernel actually does: a Hadamard product followed by a sum. Addition acts like a soft OR gate — evidence from many neurons simply accumulates, so no single input needs to be reliable on its own for the aggregate signal to be trustworthy. Framed this way, using activation ranges as a signal of "activation" feels much closer to the underlying mechanism than something like cosine similarity would be.
+A surprising result for us was the really large number of neurons activating for every pattern with similar concepts. Since so many neurons are used to identify the signal, the network seems to rely on something like a law-of-large-numbers effect: even if some signals are "fake," or some neurons are accidentally inhibited, the overall majority makes up for it. This fits well with what a convolutional kernel actually does: a Hadamard product followed by a sum. Addition acts like a soft OR gate — evidence from many neurons simply accumulates, so no single input needs to be reliable on its own for the aggregate signal to be trustworthy.
+
+This is worth thinking about. Imagine you are a neuron: you fire when the previous layer's neurons feeding into you land in a specific set of ranges together, because that's literally the arithmetic you're doing, a weighted sum. Nothing about "direction" enters into that picture on its own.
+
+Cosine similarity is the metric we (and much of the field, us included, see [Algorithm](#algorithm)) reach for instead, and it gets us far, but it's an indirect way to think about why this works. For our clustering problem, using L2 normalization before clustering allowed the data to fit into a tighter ball, you need lesser data to actually fill up the whole activation range space for HDBSCAN's single linkage to count that space as dense. Given enough examples that fill up the whole range across all neurons, we speculate that L2 normalisation would not be needed.  
 
 
 # Further Work
@@ -907,7 +912,6 @@ A surprising result for us was the really large number of neurons activating for
   - For neurons with 3x3 or 5x5 convolutions, we have cluster reports from the layers `mixed4d_3x3_pre_relu_conv` and `mixed4d_5x5_pre_relu_conv`. These cluster reports seem reasonable to a large extent; some are provided in the appendix.
 - The activation-range analysis depends on a single dependency neuron holding the same sign across all examples, which is not generally true for convolutions with kernel size greater than 1. A thorough dependency analysis of one of these neurons would be very useful.
 - We would also like a procedure that doesn't miss a large number of points (clustering is very aggressive in assigning points to noise). Simply using the heuristic `activation > 0.8 * noise radius` might work, but this hasn't been validated for any layer other than `mixed4e_1x1_pre_relu_conv:55`.
-  - Our activation-range analysis suggests the actual behaviour is closer to a set of ranges being active together, rather than being well captured by cosine similarity (which we approximated via L2 normalisation before clustering). A simpler way to increase the number of points found might be to simply increase the amount of data we cluster on: with more points falling into each active range, the L2-normalised data should become denser, and HDBSCAN's single-linkage clustering should pick up on that density and catch a substantially larger number of examples.
 - Finally, we hope this technique proves more useful for circuit analysis, as it holds promise for disentangling polysemantic neurons for a given example. Instead of a static analysis which tags the neuron with some behavior, we believe that tagging at runtime can produce disentangled subgraphs in the network which can be studied as representations of what the network "thinks" for a given input.  
 
 # Appendix
