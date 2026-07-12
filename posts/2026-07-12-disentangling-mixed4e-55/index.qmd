@@ -873,13 +873,11 @@ There is another cluster of `human faces` (Cluster 32) for this neuron, whose ra
 
 ---
 
-Since a large number of neurons are used to identify the signal, the network seems to rely on something like a law-of-large-numbers effect: even if some signals are "fake," or some neurons are accidentally inhibited, the overall majority makes up for it.
-
-This robustness makes sense once you consider what a convolutional kernel actually does: a Hadamard product followed by a sum. Framed this way, using activation ranges as a signal of "activation" feels much closer to the underlying mechanism than something like cosine similarity would be.
-
-Putting this together, for `mixed4e_1x1_pre_relu_conv:55` at least, we can conclude that it heavily gets its signals from "activated" neurons, i.e., neurons emitting a value far from the noise range. These inputs also match with the clusters that have top activations for that neuron, which in turn gives us a way of finding these ranges directly (or perhaps a simpler heuristic suffices: points `0.8 noise radius away from the noise median`).  (More similar evidence for other neurons in this layer at [Appendix: Neuron Reports](#neuron-reports)).  
+Putting this together, for `mixed4e_1x1_pre_relu_conv:55` we can conclude that it heavily gets its signals from "activated" neurons, i.e., neurons emitting a value far from the noise range. These inputs also match with the clusters that have top activations for that neuron, which in turn gives us a way of finding these ranges directly (or perhaps a simpler heuristic suffices: points `0.8 noise radius away from the noise median`). We observe the same pattern consistently across other neurons we randomly sampled from this layer, not just this one (see [Appendix: Neuron Reports](#neuron-reports)).
 
 The simpler statement, that "maximum" is a sign of activation, is starting to hold up again.
+
+A surprising result for us was the really large number of neurons activating for every pattern with similar concepts. Since so many neurons are used to identify the signal, the network seems to rely on something like a law-of-large-numbers effect: even if some signals are "fake," or some neurons are accidentally inhibited, the overall majority makes up for it. This fits well with what a convolutional kernel actually does: a Hadamard product followed by a sum. Addition acts like a soft OR gate — evidence from many neurons simply accumulates, so no single input needs to be reliable on its own for the aggregate signal to be trustworthy. Framed this way, using activation ranges as a signal of "activation" feels much closer to the underlying mechanism than something like cosine similarity would be.
 
 
 # Further Work
