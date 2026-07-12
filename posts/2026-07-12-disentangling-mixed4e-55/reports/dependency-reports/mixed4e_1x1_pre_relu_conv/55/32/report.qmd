@@ -1,0 +1,2236 @@
+---
+title: "Report: Dependencies of mixed4e_1x1_pre_relu_conv:55[32]"
+unlisted: true
+---
+
+<div>
+<img id="origin-cluster-photo-img" src="assets/mixed4e_1x1_pre_relu_conv/55/cluster_32.jpeg" alt="cid=32">
+<div class="mt-1">
+<button type="button" id="origin-cluster-photo-toggle" class="btn btn-sm btn-outline-secondary" data-combined-src="assets/mixed4e_1x1_pre_relu_conv/55/cluster_32.jpeg" data-pw-src="assets/mixed4e_1x1_pre_relu_conv/55/cluster_32_third.jpeg" data-showing-pw="false" onclick="var btn=this; var img=document.getElementById('origin-cluster-photo-img'); var showingPw=btn.dataset.showingPw==='true'; img.src=showingPw?btn.dataset.combinedSrc:btn.dataset.pwSrc; btn.dataset.showingPw=(!showingPw).toString(); btn.textContent=showingPw?'Show pointwise multiplication':'Show cluster photo';">Show pointwise multiplication</button>
+</div>
+</div>
+
+
+::: {.text-body-secondary .small .mb-3}
+- frequently firing dependency neurons: **74**
+- one-off/outlier dependency neurons (fired in fewer than **4** of **32** collected input images, not shown below): **59**
+:::
+
+
+::: {layout-ncol=2}
+
+![output activation, distance from noise_med (noise-radius units) — all](assets/output_activation_histogram_all.jpeg)
+
+![per-example fraction of firings with noise-median distance > 0.8 (noise-radius units) — all](assets/fraction_above_threshold_histogram_all.jpeg)
+
+:::
+
+
+::: {layout-ncol=2}
+
+![output activation, distance from noise_med (noise-radius units) — adding (contribution > 0)](assets/output_activation_histogram_adding.jpeg)
+
+![per-example fraction of firings with noise-median distance > 0.8 (noise-radius units) — adding (contribution > 0)](assets/fraction_above_threshold_histogram_adding.jpeg)
+
+:::
+
+
+::: {layout-ncol=2}
+
+![output activation, distance from noise_med (noise-radius units) — inhibiting (contribution <= 0)](assets/output_activation_histogram_inhibiting.jpeg)
+
+![per-example fraction of firings with noise-median distance > 0.8 (noise-radius units) — inhibiting (contribution <= 0)](assets/fraction_above_threshold_histogram_inhibiting.jpeg)
+
+:::
+
+
+## Frequently firing
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_5x5_pre_relu_conv:58** [· Fired: 100.0%]{.text-body-secondary .small}
+
+![](assets/mixed4d_5x5_pre_relu_conv/58/concentration.jpeg){height=60px} [15.8% (↑15.8%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_5x5_pre_relu_conv/58/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=31 · 32 (100.0%) · median_sim=0.96</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=31](assets/mixed4d_5x5_pre_relu_conv/58/cluster_31.jpeg)
+
+![cid=31 wild samples vs. each one's closest cluster match](assets/mixed4d_5x5_pre_relu_conv/58/pw_31.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:24** [· Fired: 100.0%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/24/concentration.jpeg){height=60px} [29.9% (↑14.0%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/24/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=23 · 32 (100.0%) · median_sim=0.92</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=23](assets/mixed4d_3x3_pre_relu_conv/24/cluster_23.jpeg)
+
+![cid=23 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/24/pw_23.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:265** [· Fired: 100.0%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/265/concentration.jpeg){height=60px} [39.6% (↑9.7%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/265/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=25 · 32 (100.0%) · median_sim=0.88</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=25](assets/mixed4d_3x3_pre_relu_conv/265/cluster_25.jpeg)
+
+![cid=25 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/265/pw_25.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:22** [· Fired: 100.0%]{.text-body-secondary .small}
+
+[14.8% (↑14.8%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_3x3_pre_relu_conv/22/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/22/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=26 · 32 (100.0%) · median_sim=0.93</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=26](assets/mixed4d_3x3_pre_relu_conv/22/cluster_26.jpeg)
+
+![cid=26 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/22/pw_26.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_5x5_pre_relu_conv:42** [· Fired: 100.0%]{.text-body-secondary .small}
+
+[28.9% (↑14.1%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_5x5_pre_relu_conv/42/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_5x5_pre_relu_conv/42/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=17 · 32 (100.0%) · median_sim=0.93</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=17](assets/mixed4d_5x5_pre_relu_conv/42/cluster_17.jpeg)
+
+![cid=17 wild samples vs. each one's closest cluster match](assets/mixed4d_5x5_pre_relu_conv/42/pw_17.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:216** [· Fired: 100.0%]{.text-body-secondary .small}
+
+[41.9% (↑13.0%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_3x3_pre_relu_conv/216/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/216/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=21 · 32 (100.0%) · median_sim=0.85</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=21](assets/mixed4d_3x3_pre_relu_conv/216/cluster_21.jpeg)
+
+![cid=21 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/216/pw_21.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:194** [· Fired: 100.0%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/194/concentration.jpeg){height=60px} [62.6% (↑3.9%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/194/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=35 · 32 (100.0%) · median_sim=0.90</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=35](assets/mixed4d_3x3_pre_relu_conv/194/cluster_35.jpeg)
+
+![cid=35 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/194/pw_35.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:224** [· Fired: 100.0%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/224/concentration.jpeg){height=60px} [72.1% (↑3.5%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/224/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=17 · 32 (100.0%) · median_sim=0.91</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=17](assets/mixed4d_3x3_pre_relu_conv/224/cluster_17.jpeg)
+
+![cid=17 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/224/pw_17.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:101** [· Fired: 96.9%]{.text-body-secondary .small}
+
+[75.8% (↑4.6%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_1x1_pre_relu_conv/101/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/101/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=21 · 31 (100.0%) · median_sim=0.87</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=21](assets/mixed4d_1x1_pre_relu_conv/101/cluster_21.jpeg)
+
+![cid=21 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/101/pw_21.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_5x5_pre_relu_conv:63** [· Fired: 93.8%]{.text-body-secondary .small}
+
+![](assets/mixed4d_5x5_pre_relu_conv/63/concentration.jpeg){height=60px} [52.0% (↑4.7%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_5x5_pre_relu_conv/63/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=3 · 30 (100.0%) · median_sim=0.92</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=3](assets/mixed4d_5x5_pre_relu_conv/63/cluster_3.jpeg)
+
+![cid=3 wild samples vs. each one's closest cluster match](assets/mixed4d_5x5_pre_relu_conv/63/pw_3.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:137** [· Fired: 93.8%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/137/concentration.jpeg){height=60px} [75.1% (↑3.0%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/137/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=18 · 30 (100.0%) · median_sim=0.89</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=18](assets/mixed4d_3x3_pre_relu_conv/137/cluster_18.jpeg)
+
+![cid=18 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/137/pw_18.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:16** [· Fired: 90.6%]{.text-body-secondary .small}
+
+[51.3% (↑9.4%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_3x3_pre_relu_conv/16/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/16/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=12 · 29 (100.0%) · median_sim=0.93</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=12](assets/mixed4d_3x3_pre_relu_conv/16/cluster_12.jpeg)
+
+![cid=12 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/16/pw_12.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:75** [· Fired: 90.6%]{.text-body-secondary .small}
+
+[90.5% (↑3.2%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_1x1_pre_relu_conv/75/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/75/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=25 · 29 (100.0%) · median_sim=0.91</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=25](assets/mixed4d_1x1_pre_relu_conv/75/cluster_25.jpeg)
+
+![cid=25 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/75/pw_25.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:53** [· Fired: 87.5%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/53/concentration.jpeg){height=60px} [65.8% (↑3.2%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/53/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=36 · 28 (100.0%) · median_sim=0.95</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=36](assets/mixed4d_3x3_pre_relu_conv/53/cluster_36.jpeg)
+
+![cid=36 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/53/pw_36.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:178** [· Fired: 84.4%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/178/concentration.jpeg){height=60px} [58.7% (↑3.4%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/178/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=32 · 27 (100.0%) · median_sim=0.96</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=32](assets/mixed4d_3x3_pre_relu_conv/178/cluster_32.jpeg)
+
+![cid=32 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/178/pw_32.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:211** [· Fired: 81.2%]{.text-body-secondary .small}
+
+[66.3% (↑4.5%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_3x3_pre_relu_conv/211/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/211/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="92.3" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 92.3%;"></div></div><span class="text-body-secondary small">cid=27 · 24 (92.3%) · median_sim=0.96</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=27](assets/mixed4d_3x3_pre_relu_conv/211/cluster_27.jpeg)
+
+![cid=27 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/211/pw_27.jpeg)
+
+</details>
+
+</div>
+
+<details><summary class="text-body-secondary small">show outlier clusters (1)</summary>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="7.7" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-warning" style="width: 7.7%;"></div></div><span class="text-body-secondary small">cid=28 · 2 (7.7%) · median_sim=0.92 · outlier</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=28](assets/mixed4d_3x3_pre_relu_conv/211/cluster_28.jpeg)
+
+![cid=28 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/211/pw_28.jpeg)
+
+</details>
+
+</div>
+
+</details>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:76** [· Fired: 81.2%]{.text-body-secondary .small}
+
+[84.7% (↑3.2%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_1x1_pre_relu_conv/76/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/76/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=17 · 26 (100.0%) · median_sim=0.91</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=17](assets/mixed4d_1x1_pre_relu_conv/76/cluster_17.jpeg)
+
+![cid=17 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/76/pw_17.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_5x5_pre_relu_conv:23** [· Fired: 81.2%]{.text-body-secondary .small}
+
+[98.9% (↑2.1%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_5x5_pre_relu_conv/23/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_5x5_pre_relu_conv/23/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="88.5" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 88.5%;"></div></div><span class="text-body-secondary small">cid=17 · 23 (88.5%) · median_sim=0.91</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=17](assets/mixed4d_5x5_pre_relu_conv/23/cluster_17.jpeg)
+
+![cid=17 wild samples vs. each one's closest cluster match](assets/mixed4d_5x5_pre_relu_conv/23/pw_17.jpeg)
+
+</details>
+
+</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="11.5" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 11.5%;"></div></div><span class="text-body-secondary small">cid=18 · 3 (11.5%) · median_sim=0.90</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=18](assets/mixed4d_5x5_pre_relu_conv/23/cluster_18.jpeg)
+
+![cid=18 wild samples vs. each one's closest cluster match](assets/mixed4d_5x5_pre_relu_conv/23/pw_18.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:99** [· Fired: 78.1%]{.text-body-secondary .small}
+
+![](assets/mixed4d_1x1_pre_relu_conv/99/concentration.jpeg){height=60px} [89.4% (↑1.9%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/99/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=21 · 25 (100.0%) · median_sim=0.90</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=21](assets/mixed4d_1x1_pre_relu_conv/99/cluster_21.jpeg)
+
+![cid=21 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/99/pw_21.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_pool_reduce_pre_relu_conv:35** [· Fired: 78.1%]{.text-body-secondary .small}
+
+![](assets/mixed4d_pool_reduce_pre_relu_conv/35/concentration.jpeg){height=60px} [96.5% (↑1.5%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_pool_reduce_pre_relu_conv/35/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=91 · 25 (100.0%) · median_sim=0.94</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=91](assets/mixed4d_pool_reduce_pre_relu_conv/35/cluster_91.jpeg)
+
+![cid=91 wild samples vs. each one's closest cluster match](assets/mixed4d_pool_reduce_pre_relu_conv/35/pw_91.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:86** [· Fired: 75.0%]{.text-body-secondary .small}
+
+![](assets/mixed4d_1x1_pre_relu_conv/86/concentration.jpeg){height=60px} [68.5% (↑2.7%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/86/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=6 · 24 (100.0%) · median_sim=0.91</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=6](assets/mixed4d_1x1_pre_relu_conv/86/cluster_6.jpeg)
+
+![cid=6 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/86/pw_6.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:219** [· Fired: 75.0%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/219/concentration.jpeg){height=60px} [77.3% (↑2.2%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/219/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=20 · 24 (100.0%) · median_sim=0.89</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=20](assets/mixed4d_3x3_pre_relu_conv/219/cluster_20.jpeg)
+
+![cid=20 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/219/pw_20.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:15** [· Fired: 75.0%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/15/concentration.jpeg){height=60px} [84.4% (↑2.0%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/15/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=23 · 24 (100.0%) · median_sim=0.91</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=23](assets/mixed4d_3x3_pre_relu_conv/15/cluster_23.jpeg)
+
+![cid=23 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/15/pw_23.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_5x5_pre_relu_conv:37** [· Fired: 71.9%]{.text-body-secondary .small}
+
+[59.6% (↑4.9%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_5x5_pre_relu_conv/37/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_5x5_pre_relu_conv/37/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=19 · 23 (100.0%) · median_sim=0.92</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=19](assets/mixed4d_5x5_pre_relu_conv/37/cluster_19.jpeg)
+
+![cid=19 wild samples vs. each one's closest cluster match](assets/mixed4d_5x5_pre_relu_conv/37/pw_19.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:151** [· Fired: 71.9%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/151/concentration.jpeg){height=60px} [82.4% (↑1.9%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/151/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=7 · 23 (100.0%) · median_sim=0.90</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=7](assets/mixed4d_3x3_pre_relu_conv/151/cluster_7.jpeg)
+
+![cid=7 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/151/pw_7.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:282** [· Fired: 71.9%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/282/concentration.jpeg){height=60px} [86.3% (↑1.9%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/282/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=9 · 23 (100.0%) · median_sim=0.90</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=9](assets/mixed4d_3x3_pre_relu_conv/282/cluster_9.jpeg)
+
+![cid=9 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/282/pw_9.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_pool_reduce_pre_relu_conv:40** [· Fired: 68.8%]{.text-body-secondary .small}
+
+![](assets/mixed4d_pool_reduce_pre_relu_conv/40/concentration.jpeg){height=60px} [43.7% (↑4.1%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_pool_reduce_pre_relu_conv/40/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=128 · 22 (100.0%) · median_sim=0.89</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=128](assets/mixed4d_pool_reduce_pre_relu_conv/40/cluster_128.jpeg)
+
+![cid=128 wild samples vs. each one's closest cluster match](assets/mixed4d_pool_reduce_pre_relu_conv/40/pw_128.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_pool_reduce_pre_relu_conv:19** [· Fired: 68.8%]{.text-body-secondary .small}
+
+![](assets/mixed4d_pool_reduce_pre_relu_conv/19/concentration.jpeg){height=60px} [47.3% (↑3.6%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_pool_reduce_pre_relu_conv/19/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=85 · 22 (100.0%) · median_sim=0.96</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=85](assets/mixed4d_pool_reduce_pre_relu_conv/19/cluster_85.jpeg)
+
+![cid=85 wild samples vs. each one's closest cluster match](assets/mixed4d_pool_reduce_pre_relu_conv/19/pw_85.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_5x5_pre_relu_conv:59** [· Fired: 68.8%]{.text-body-secondary .small}
+
+![](assets/mixed4d_5x5_pre_relu_conv/59/concentration.jpeg){height=60px} [55.3% (↑3.3%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_5x5_pre_relu_conv/59/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=2 · 22 (100.0%) · median_sim=0.94</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=2](assets/mixed4d_5x5_pre_relu_conv/59/cluster_2.jpeg)
+
+![cid=2 wild samples vs. each one's closest cluster match](assets/mixed4d_5x5_pre_relu_conv/59/pw_2.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:52** [· Fired: 65.6%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/52/concentration.jpeg){height=60px} [80.5% (↑1.9%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/52/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=31 · 21 (100.0%) · median_sim=0.92</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=31](assets/mixed4d_3x3_pre_relu_conv/52/cluster_31.jpeg)
+
+![cid=31 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/52/pw_31.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_5x5_pre_relu_conv:47** [· Fired: 62.5%]{.text-body-secondary .small}
+
+[93.0% (↑2.1%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_5x5_pre_relu_conv/47/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_5x5_pre_relu_conv/47/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=10 · 20 (100.0%) · median_sim=0.94</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=10](assets/mixed4d_5x5_pre_relu_conv/47/cluster_10.jpeg)
+
+![cid=10 wild samples vs. each one's closest cluster match](assets/mixed4d_5x5_pre_relu_conv/47/pw_10.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:22** [· Fired: 53.1%]{.text-body-secondary .small}
+
+[71.3% (↑2.7%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_1x1_pre_relu_conv/22/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/22/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="94.1" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 94.1%;"></div></div><span class="text-body-secondary small">cid=5 · 16 (94.1%) · median_sim=0.68</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=5](assets/mixed4d_1x1_pre_relu_conv/22/cluster_5.jpeg)
+
+![cid=5 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/22/pw_5.jpeg)
+
+</details>
+
+</div>
+
+<details><summary class="text-body-secondary small">show outlier clusters (1)</summary>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="5.9" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-warning" style="width: 5.9%;"></div></div><span class="text-body-secondary small">cid=1 · 1 (5.9%) · median_sim=0.36 · outlier</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=1](assets/mixed4d_1x1_pre_relu_conv/22/cluster_1.jpeg)
+
+![cid=1 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/22/pw_1.jpeg)
+
+</details>
+
+</div>
+
+</details>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_5x5_pre_relu_conv:61** [· Fired: 53.1%]{.text-body-secondary .small}
+
+[78.1% (↑2.2%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_5x5_pre_relu_conv/61/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_5x5_pre_relu_conv/61/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=23 · 17 (100.0%) · median_sim=0.97</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=23](assets/mixed4d_5x5_pre_relu_conv/61/cluster_23.jpeg)
+
+![cid=23 wild samples vs. each one's closest cluster match](assets/mixed4d_5x5_pre_relu_conv/61/pw_23.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_5x5_pre_relu_conv:40** [· Fired: 53.1%]{.text-body-secondary .small}
+
+![](assets/mixed4d_5x5_pre_relu_conv/40/concentration.jpeg){height=60px} [94.6% (↑1.1%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_5x5_pre_relu_conv/40/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=5 · 17 (100.0%) · median_sim=0.91</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=5](assets/mixed4d_5x5_pre_relu_conv/40/cluster_5.jpeg)
+
+![cid=5 wild samples vs. each one's closest cluster match](assets/mixed4d_5x5_pre_relu_conv/40/pw_5.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:100** [· Fired: 50.0%]{.text-body-secondary .small}
+
+[96.1% (↑1.4%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_1x1_pre_relu_conv/100/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/100/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=0 · 16 (100.0%) · median_sim=0.85</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=0](assets/mixed4d_1x1_pre_relu_conv/100/cluster_0.jpeg)
+
+![cid=0 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/100/pw_0.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_pool_reduce_pre_relu_conv:9** [· Fired: 46.9%]{.text-body-secondary .small}
+
+![](assets/mixed4d_pool_reduce_pre_relu_conv/9/concentration.jpeg){height=60px} [78.6% (↑1.3%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_pool_reduce_pre_relu_conv/9/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=75 · 15 (100.0%) · median_sim=0.92</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=75](assets/mixed4d_pool_reduce_pre_relu_conv/9/cluster_75.jpeg)
+
+![cid=75 wild samples vs. each one's closest cluster match](assets/mixed4d_pool_reduce_pre_relu_conv/9/pw_75.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:144** [· Fired: 46.9%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/144/concentration.jpeg){height=60px} [91.5% (↑1.1%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/144/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=21 · 15 (100.0%) · median_sim=0.83</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=21](assets/mixed4d_3x3_pre_relu_conv/144/cluster_21.jpeg)
+
+![cid=21 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/144/pw_21.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:268** [· Fired: 46.9%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/268/concentration.jpeg){height=60px} [93.5% (↑1.0%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/268/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=35 · 15 (100.0%) · median_sim=0.92</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=35](assets/mixed4d_3x3_pre_relu_conv/268/cluster_35.jpeg)
+
+![cid=35 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/268/pw_35.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_pool_reduce_pre_relu_conv:59** [· Fired: 43.8%]{.text-body-secondary .small}
+
+![](assets/mixed4d_pool_reduce_pre_relu_conv/59/concentration.jpeg){height=60px} [92.5% (↑1.0%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_pool_reduce_pre_relu_conv/59/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="64.3" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 64.3%;"></div></div><span class="text-body-secondary small">cid=38 · 9 (64.3%) · median_sim=0.95</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=38](assets/mixed4d_pool_reduce_pre_relu_conv/59/cluster_38.jpeg)
+
+![cid=38 wild samples vs. each one's closest cluster match](assets/mixed4d_pool_reduce_pre_relu_conv/59/pw_38.jpeg)
+
+</details>
+
+</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="35.7" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 35.7%;"></div></div><span class="text-body-secondary small">cid=39 · 5 (35.7%) · median_sim=0.96</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=39](assets/mixed4d_pool_reduce_pre_relu_conv/59/cluster_39.jpeg)
+
+![cid=39 wild samples vs. each one's closest cluster match](assets/mixed4d_pool_reduce_pre_relu_conv/59/pw_39.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:47** [· Fired: 43.8%]{.text-body-secondary .small}
+
+[81.4% (↑1.7%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_1x1_pre_relu_conv/47/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/47/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="71.4" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 71.4%;"></div></div><span class="text-body-secondary small">cid=8 · 10 (71.4%) · median_sim=0.85</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=8](assets/mixed4d_1x1_pre_relu_conv/47/cluster_8.jpeg)
+
+![cid=8 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/47/pw_8.jpeg)
+
+</details>
+
+</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="28.6" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 28.6%;"></div></div><span class="text-body-secondary small">cid=9 · 4 (28.6%) · median_sim=0.83</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=9](assets/mixed4d_1x1_pre_relu_conv/47/cluster_9.jpeg)
+
+![cid=9 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/47/pw_9.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:44** [· Fired: 40.6%]{.text-body-secondary .small}
+
+[79.7% (↑1.6%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_1x1_pre_relu_conv/44/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/44/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="61.5" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 61.5%;"></div></div><span class="text-body-secondary small">cid=3 · 8 (61.5%) · median_sim=0.71</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=3](assets/mixed4d_1x1_pre_relu_conv/44/cluster_3.jpeg)
+
+![cid=3 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/44/pw_3.jpeg)
+
+</details>
+
+</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="30.8" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 30.8%;"></div></div><span class="text-body-secondary small">cid=2 · 4 (30.8%) · median_sim=0.43</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=2](assets/mixed4d_1x1_pre_relu_conv/44/cluster_2.jpeg)
+
+![cid=2 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/44/pw_2.jpeg)
+
+</details>
+
+</div>
+
+<details><summary class="text-body-secondary small">show outlier clusters (1)</summary>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="7.7" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-warning" style="width: 7.7%;"></div></div><span class="text-body-secondary small">cid=1 · 1 (7.7%) · median_sim=0.40 · outlier</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=1](assets/mixed4d_1x1_pre_relu_conv/44/cluster_1.jpeg)
+
+![cid=1 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/44/pw_1.jpeg)
+
+</details>
+
+</div>
+
+</details>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_5x5_pre_relu_conv:45** [· Fired: 34.4%]{.text-body-secondary .small}
+
+[61.8% (↑2.2%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_5x5_pre_relu_conv/45/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_5x5_pre_relu_conv/45/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=3 · 11 (100.0%) · median_sim=0.88</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=3](assets/mixed4d_5x5_pre_relu_conv/45/cluster_3.jpeg)
+
+![cid=3 wild samples vs. each one's closest cluster match](assets/mixed4d_5x5_pre_relu_conv/45/pw_3.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:98** [· Fired: 34.4%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/98/concentration.jpeg){height=60px} [98.2% (↑0.5%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/98/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=22 · 11 (100.0%) · median_sim=0.94</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=22](assets/mixed4d_3x3_pre_relu_conv/98/cluster_22.jpeg)
+
+![cid=22 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/98/pw_22.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:104** [· Fired: 34.4%]{.text-body-secondary .small}
+
+![](assets/mixed4d_1x1_pre_relu_conv/104/concentration.jpeg){height=60px} [98.6% (↑0.5%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/104/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=8 · 11 (100.0%) · median_sim=0.89</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=8](assets/mixed4d_1x1_pre_relu_conv/104/cluster_8.jpeg)
+
+![cid=8 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/104/pw_8.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:1** [· Fired: 31.2%]{.text-body-secondary .small}
+
+[85.8% (↑1.2%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_1x1_pre_relu_conv/1/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/1/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=16 · 10 (100.0%) · median_sim=0.94</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=16](assets/mixed4d_1x1_pre_relu_conv/1/cluster_16.jpeg)
+
+![cid=16 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/1/pw_16.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_pool_reduce_pre_relu_conv:47** [· Fired: 28.1%]{.text-body-secondary .small}
+
+[53.6% (↑2.3%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_pool_reduce_pre_relu_conv/47/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_pool_reduce_pre_relu_conv/47/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=45 · 9 (100.0%) · median_sim=0.95</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=45](assets/mixed4d_pool_reduce_pre_relu_conv/47/cluster_45.jpeg)
+
+![cid=45 wild samples vs. each one's closest cluster match](assets/mixed4d_pool_reduce_pre_relu_conv/47/pw_45.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:81** [· Fired: 28.1%]{.text-body-secondary .small}
+
+[68.6% (↑1.5%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_3x3_pre_relu_conv/81/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/81/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=22 · 9 (100.0%) · median_sim=0.90</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=22](assets/mixed4d_3x3_pre_relu_conv/81/cluster_22.jpeg)
+
+![cid=22 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/81/pw_22.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:63** [· Fired: 28.1%]{.text-body-secondary .small}
+
+![](assets/mixed4d_1x1_pre_relu_conv/63/concentration.jpeg){height=60px} [90.1% (↑0.7%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/63/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="55.6" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 55.6%;"></div></div><span class="text-body-secondary small">cid=10 · 5 (55.6%) · median_sim=0.87</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=10](assets/mixed4d_1x1_pre_relu_conv/63/cluster_10.jpeg)
+
+![cid=10 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/63/pw_10.jpeg)
+
+</details>
+
+</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="33.3" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 33.3%;"></div></div><span class="text-body-secondary small">cid=8 · 3 (33.3%) · median_sim=0.86</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=8](assets/mixed4d_1x1_pre_relu_conv/63/cluster_8.jpeg)
+
+![cid=8 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/63/pw_8.jpeg)
+
+</details>
+
+</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="11.1" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 11.1%;"></div></div><span class="text-body-secondary small">cid=7 · 1 (11.1%) · median_sim=0.78</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=7](assets/mixed4d_1x1_pre_relu_conv/63/cluster_7.jpeg)
+
+![cid=7 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/63/pw_7.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:10** [· Fired: 28.1%]{.text-body-secondary .small}
+
+[86.9% (↑1.0%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_3x3_pre_relu_conv/10/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/10/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=16 · 9 (100.0%) · median_sim=0.92</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=16](assets/mixed4d_3x3_pre_relu_conv/10/cluster_16.jpeg)
+
+![cid=16 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/10/pw_16.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_5x5_pre_relu_conv:1** [· Fired: 28.1%]{.text-body-secondary .small}
+
+[94.7% (↑0.9%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_5x5_pre_relu_conv/1/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_5x5_pre_relu_conv/1/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=15 · 9 (100.0%) · median_sim=0.94</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=15](assets/mixed4d_5x5_pre_relu_conv/1/cluster_15.jpeg)
+
+![cid=15 wild samples vs. each one's closest cluster match](assets/mixed4d_5x5_pre_relu_conv/1/pw_15.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:170** [· Fired: 28.1%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/170/concentration.jpeg){height=60px} [97.6% (↑0.4%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/170/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=8 · 9 (100.0%) · median_sim=0.89</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=8](assets/mixed4d_3x3_pre_relu_conv/170/cluster_8.jpeg)
+
+![cid=8 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/170/pw_8.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:111** [· Fired: 25.0%]{.text-body-secondary .small}
+
+[93.8% (↑0.8%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_1x1_pre_relu_conv/111/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/111/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=6 · 8 (100.0%) · median_sim=0.89</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=6](assets/mixed4d_1x1_pre_relu_conv/111/cluster_6.jpeg)
+
+![cid=6 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/111/pw_6.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:160** [· Fired: 25.0%]{.text-body-secondary .small}
+
+[96.8% (↑0.7%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_3x3_pre_relu_conv/160/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/160/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=8 · 8 (100.0%) · median_sim=0.86</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=8](assets/mixed4d_3x3_pre_relu_conv/160/cluster_8.jpeg)
+
+![cid=8 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/160/pw_8.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_5x5_pre_relu_conv:33** [· Fired: 21.9%]{.text-body-secondary .small}
+
+![](assets/mixed4d_5x5_pre_relu_conv/33/concentration.jpeg){height=60px} [99.0% (↑0.3%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_5x5_pre_relu_conv/33/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=23 · 7 (100.0%) · median_sim=0.94</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=23](assets/mixed4d_5x5_pre_relu_conv/33/cluster_23.jpeg)
+
+![cid=23 wild samples vs. each one's closest cluster match](assets/mixed4d_5x5_pre_relu_conv/33/pw_23.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:21** [· Fired: 21.9%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/21/concentration.jpeg){height=60px} [99.9% (↑0.3%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/21/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=10 · 7 (100.0%) · median_sim=0.85</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=10](assets/mixed4d_3x3_pre_relu_conv/21/cluster_10.jpeg)
+
+![cid=10 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/21/pw_10.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:27** [· Fired: 21.9%]{.text-body-secondary .small}
+
+[100.0% (↑0.5%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_3x3_pre_relu_conv/27/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/27/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=20 · 7 (100.0%) · median_sim=0.86</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=20](assets/mixed4d_3x3_pre_relu_conv/27/cluster_20.jpeg)
+
+![cid=20 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/27/pw_20.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:43** [· Fired: 18.8%]{.text-body-secondary .small}
+
+![](assets/mixed4d_1x1_pre_relu_conv/43/concentration.jpeg){height=60px} [87.5% (↑0.5%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/43/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="66.7" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 66.7%;"></div></div><span class="text-body-secondary small">cid=34 · 4 (66.7%) · median_sim=0.78</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=34](assets/mixed4d_1x1_pre_relu_conv/43/cluster_34.jpeg)
+
+![cid=34 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/43/pw_34.jpeg)
+
+</details>
+
+</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="33.3" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 33.3%;"></div></div><span class="text-body-secondary small">cid=35 · 2 (33.3%) · median_sim=0.93</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=35](assets/mixed4d_1x1_pre_relu_conv/43/cluster_35.jpeg)
+
+![cid=35 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/43/pw_35.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:153** [· Fired: 18.8%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/153/concentration.jpeg){height=60px} [95.0% (↑0.4%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/153/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=14 · 6 (100.0%) · median_sim=0.87</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=14](assets/mixed4d_3x3_pre_relu_conv/153/cluster_14.jpeg)
+
+![cid=14 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/153/pw_14.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_5x5_pre_relu_conv:34** [· Fired: 18.8%]{.text-body-secondary .small}
+
+![](assets/mixed4d_5x5_pre_relu_conv/34/concentration.jpeg){height=60px} [97.0% (↑0.3%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_5x5_pre_relu_conv/34/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=13 · 6 (100.0%) · median_sim=0.93</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=13](assets/mixed4d_5x5_pre_relu_conv/34/cluster_13.jpeg)
+
+![cid=13 wild samples vs. each one's closest cluster match](assets/mixed4d_5x5_pre_relu_conv/34/pw_13.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:257** [· Fired: 18.8%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/257/concentration.jpeg){height=60px} [99.6% (↑0.2%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/257/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=5 · 6 (100.0%) · median_sim=0.90</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=5](assets/mixed4d_3x3_pre_relu_conv/257/cluster_5.jpeg)
+
+![cid=5 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/257/pw_5.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:61** [· Fired: 15.6%]{.text-body-secondary .small}
+
+[54.7% (↑1.1%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_1x1_pre_relu_conv/61/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/61/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=30 · 5 (100.0%) · median_sim=0.84</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=30](assets/mixed4d_1x1_pre_relu_conv/61/cluster_30.jpeg)
+
+![cid=30 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/61/pw_30.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_pool_reduce_pre_relu_conv:54** [· Fired: 15.6%]{.text-body-secondary .small}
+
+[67.1% (↑0.9%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_pool_reduce_pre_relu_conv/54/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_pool_reduce_pre_relu_conv/54/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=89 · 5 (100.0%) · median_sim=0.90</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=89](assets/mixed4d_pool_reduce_pre_relu_conv/54/cluster_89.jpeg)
+
+![cid=89 wild samples vs. each one's closest cluster match](assets/mixed4d_pool_reduce_pre_relu_conv/54/pw_89.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_pool_reduce_pre_relu_conv:60** [· Fired: 15.6%]{.text-body-secondary .small}
+
+![](assets/mixed4d_pool_reduce_pre_relu_conv/60/concentration.jpeg){height=60px} [86.7% (↑0.4%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_pool_reduce_pre_relu_conv/60/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="80.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 80.0%;"></div></div><span class="text-body-secondary small">cid=56 · 4 (80.0%) · median_sim=0.75</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=56](assets/mixed4d_pool_reduce_pre_relu_conv/60/cluster_56.jpeg)
+
+![cid=56 wild samples vs. each one's closest cluster match](assets/mixed4d_pool_reduce_pre_relu_conv/60/pw_56.jpeg)
+
+</details>
+
+</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="20.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 20.0%;"></div></div><span class="text-body-secondary small">cid=80 · 1 (20.0%) · median_sim=0.71</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=80](assets/mixed4d_pool_reduce_pre_relu_conv/60/cluster_80.jpeg)
+
+![cid=80 wild samples vs. each one's closest cluster match](assets/mixed4d_pool_reduce_pre_relu_conv/60/pw_80.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:79** [· Fired: 15.6%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/79/concentration.jpeg){height=60px} [87.0% (↑0.4%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/79/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=25 · 5 (100.0%) · median_sim=0.89</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=25](assets/mixed4d_3x3_pre_relu_conv/79/cluster_25.jpeg)
+
+![cid=25 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/79/pw_25.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_5x5_pre_relu_conv:32** [· Fired: 15.6%]{.text-body-secondary .small}
+
+![](assets/mixed4d_5x5_pre_relu_conv/32/concentration.jpeg){height=60px} [90.4% (↑0.4%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_5x5_pre_relu_conv/32/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=28 · 5 (100.0%) · median_sim=0.95</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=28](assets/mixed4d_5x5_pre_relu_conv/32/cluster_28.jpeg)
+
+![cid=28 wild samples vs. each one's closest cluster match](assets/mixed4d_5x5_pre_relu_conv/32/pw_28.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:52** [· Fired: 15.6%]{.text-body-secondary .small}
+
+![](assets/mixed4d_1x1_pre_relu_conv/52/concentration.jpeg){height=60px} [96.7% (↑0.3%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/52/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=4 · 5 (100.0%) · median_sim=0.82</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=4](assets/mixed4d_1x1_pre_relu_conv/52/cluster_4.jpeg)
+
+![cid=4 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/52/pw_4.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:217** [· Fired: 15.6%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/217/concentration.jpeg){height=60px} [99.4% (↑0.2%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/217/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=4 · 5 (100.0%) · median_sim=0.90</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=4](assets/mixed4d_3x3_pre_relu_conv/217/cluster_4.jpeg)
+
+![cid=4 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/217/pw_4.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:9** [· Fired: 12.5%]{.text-body-secondary .small}
+
+[87.3% (↑0.5%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_1x1_pre_relu_conv/9/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/9/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=9 · 4 (100.0%) · median_sim=0.77</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=9](assets/mixed4d_1x1_pre_relu_conv/9/cluster_9.jpeg)
+
+![cid=9 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/9/pw_9.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:188** [· Fired: 12.5%]{.text-body-secondary .small}
+
+[90.9% (↑0.4%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_3x3_pre_relu_conv/188/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/188/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="75.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 75.0%;"></div></div><span class="text-body-secondary small">cid=17 · 3 (75.0%) · median_sim=0.89</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=17](assets/mixed4d_3x3_pre_relu_conv/188/cluster_17.jpeg)
+
+![cid=17 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/188/pw_17.jpeg)
+
+</details>
+
+</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="25.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 25.0%;"></div></div><span class="text-body-secondary small">cid=11 · 1 (25.0%) · median_sim=0.84</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=11](assets/mixed4d_3x3_pre_relu_conv/188/cluster_11.jpeg)
+
+![cid=11 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/188/pw_11.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:35** [· Fired: 12.5%]{.text-body-secondary .small}
+
+![](assets/mixed4d_1x1_pre_relu_conv/35/concentration.jpeg){height=60px} [97.2% (↑0.2%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/35/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="25.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 25.0%;"></div></div><span class="text-body-secondary small">cid=14 · 1 (25.0%) · median_sim=0.66</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=14](assets/mixed4d_1x1_pre_relu_conv/35/cluster_14.jpeg)
+
+![cid=14 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/35/pw_14.jpeg)
+
+</details>
+
+</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="25.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 25.0%;"></div></div><span class="text-body-secondary small">cid=13 · 1 (25.0%) · median_sim=0.59</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=13](assets/mixed4d_1x1_pre_relu_conv/35/cluster_13.jpeg)
+
+![cid=13 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/35/pw_13.jpeg)
+
+</details>
+
+</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="25.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 25.0%;"></div></div><span class="text-body-secondary small">cid=8 · 1 (25.0%) · median_sim=0.46</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=8](assets/mixed4d_1x1_pre_relu_conv/35/cluster_8.jpeg)
+
+![cid=8 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/35/pw_8.jpeg)
+
+</details>
+
+</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="25.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 25.0%;"></div></div><span class="text-body-secondary small">cid=4 · 1 (25.0%) · median_sim=0.46</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=4](assets/mixed4d_1x1_pre_relu_conv/35/cluster_4.jpeg)
+
+![cid=4 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/35/pw_4.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:14** [· Fired: 12.5%]{.text-body-secondary .small}
+
+![](assets/mixed4d_1x1_pre_relu_conv/14/concentration.jpeg){height=60px} [99.1% (↑0.2%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/14/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=14 · 4 (100.0%) · median_sim=0.85</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=14](assets/mixed4d_1x1_pre_relu_conv/14/cluster_14.jpeg)
+
+![cid=14 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/14/pw_14.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:11** [· Fired: 12.5%]{.text-body-secondary .small}
+
+[99.3% (↑0.3%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_1x1_pre_relu_conv/11/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/11/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=26 · 4 (100.0%) · median_sim=0.88</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=26](assets/mixed4d_1x1_pre_relu_conv/11/cluster_26.jpeg)
+
+![cid=26 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/11/pw_26.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_1x1_pre_relu_conv:50** [· Fired: 12.5%]{.text-body-secondary .small}
+
+[99.5% (↑0.3%)]{style="color: var(--bs-success);"} ![](assets/mixed4d_1x1_pre_relu_conv/50/concentration.jpeg){height=60px}
+:::
+
+![](assets/mixed4d_1x1_pre_relu_conv/50/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=8 · 4 (100.0%) · median_sim=0.97</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=8](assets/mixed4d_1x1_pre_relu_conv/50/cluster_8.jpeg)
+
+![cid=8 wild samples vs. each one's closest cluster match](assets/mixed4d_1x1_pre_relu_conv/50/pw_8.jpeg)
+
+</details>
+
+</div>
+
+:::
+
+
+::: {.border .rounded .mb-2 .p-3}
+
+::: {.d-flex .flex-nowrap .align-items-center .justify-content-between .border-bottom .pb-2 .mb-2}
+**mixed4d_3x3_pre_relu_conv:166** [· Fired: 12.5%]{.text-body-secondary .small}
+
+![](assets/mixed4d_3x3_pre_relu_conv/166/concentration.jpeg){height=60px} [100.0% (↑0.1%)]{style="color: var(--bs-danger);"}
+:::
+
+![](assets/mixed4d_3x3_pre_relu_conv/166/overview_scatter.jpeg)
+
+<div class="text-body-secondary small mb-1">Firing by cluster</div>
+
+<div class="mb-2"><div class="d-flex align-items-center gap-2 mb-1"><div class="progress flex-grow-1" style="height: 6px;" role="progressbar" aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: 100.0%;"></div></div><span class="text-body-secondary small">cid=11 · 4 (100.0%) · median_sim=0.83</span></div>
+
+<details><summary class="text-body-secondary small">show cluster photo</summary>
+
+![cid=11](assets/mixed4d_3x3_pre_relu_conv/166/cluster_11.jpeg)
+
+![cid=11 wild samples vs. each one's closest cluster match](assets/mixed4d_3x3_pre_relu_conv/166/pw_11.jpeg)
+
+</details>
+
+</div>
+
+:::

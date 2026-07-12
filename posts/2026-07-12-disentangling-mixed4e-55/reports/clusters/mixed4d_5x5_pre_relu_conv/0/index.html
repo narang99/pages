@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Attribution Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #141517;
+    color: #c1c2c5;
+    font-family: "Source Sans 3", "Source Sans Pro", system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  /* ---------- tab bar ---------- */
+  .tab-bar-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #141517;
+    border-bottom: 2px solid #2c2e33;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #4dabf7 #1e1f22;
+  }
+
+  .tab-bar {
+    display: flex;
+    gap: 0;
+    min-width: max-content;
+    padding: 0 1.5rem;
+  }
+
+  .tab-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    padding: 0.65rem 1.1rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #868e96;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+    margin-bottom: -2px; /* sit on top of wrap border */
+  }
+
+  .tab-btn .tab-count {
+    font-size: 0.68rem;
+    font-weight: 400;
+    color: #495057;
+    transition: color 0.15s;
+  }
+
+  .tab-btn:hover { color: #c1c2c5; }
+  .tab-btn:hover .tab-count { color: #868e96; }
+
+  .tab-btn.active {
+    color: #4dabf7;
+    border-bottom-color: #4dabf7;
+  }
+
+  .tab-btn.active .tab-count { color: #74c0fc; }
+
+  /* ---------- content ---------- */
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+  }
+
+  h1.report-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #e9ecef;
+    border-bottom: 2px solid #4dabf7;
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .label-section {
+    display: none; /* hidden until tab activated */
+    background: #1e1f22;
+    border: 1px solid #2c2e33;
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  }
+
+  .label-section.active { display: block; }
+
+  .label-header {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #4dabf7;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #2c2e33;
+  }
+
+  .grid-block { margin-bottom: 0.5rem; }
+
+  .grid-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: #1971c2;
+    color: #e9ecef;
+    padding: 0.18rem 0.65rem;
+    border-radius: 999px;
+  }
+
+  .total { font-size: 0.83rem; color: #868e96; }
+
+  .toggle-btn {
+    margin-left: auto;
+    background: #1e1f22;
+    border: 1px solid #4dabf7;
+    color: #4dabf7;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.28rem 0.9rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .toggle-btn:hover { background: #1971c2; color: #e9ecef; border-color: #1971c2; }
+
+  .view {
+    width: 100%;
+    display: block;
+    border: 1px solid #2c2e33;
+    border-radius: 4px;
+  }
+
+  /* lazy load fade-in */
+  .view { opacity: 0; transition: opacity 0.3s ease; }
+  .view.loaded { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="tab-bar-wrap"><div class="tab-bar"><button class="tab-btn" data-tab="0" onclick="activateTab(0)">Cluster -1<span class="tab-count">100 samples</span></button><button class="tab-btn" data-tab="1" onclick="activateTab(1)">Cluster 2<span class="tab-count">100 samples</span></button><button class="tab-btn" data-tab="2" onclick="activateTab(2)">Cluster 5<span class="tab-count">100 samples</span></button><button class="tab-btn" data-tab="3" onclick="activateTab(3)">Cluster 21<span class="tab-count">100 samples</span></button><button class="tab-btn" data-tab="4" onclick="activateTab(4)">Cluster 12<span class="tab-count">100 samples</span></button><button class="tab-btn" data-tab="5" onclick="activateTab(5)">Cluster 13<span class="tab-count">100 samples</span></button><button class="tab-btn" data-tab="6" onclick="activateTab(6)">Cluster 23<span class="tab-count">100 samples</span></button><button class="tab-btn" data-tab="7" onclick="activateTab(7)">Cluster 16<span class="tab-count">100 samples</span></button><button class="tab-btn" data-tab="8" onclick="activateTab(8)">Cluster 11<span class="tab-count">94 samples</span></button><button class="tab-btn" data-tab="9" onclick="activateTab(9)">Cluster 19<span class="tab-count">89 samples</span></button><button class="tab-btn" data-tab="10" onclick="activateTab(10)">Cluster 22<span class="tab-count">76 samples</span></button><button class="tab-btn" data-tab="11" onclick="activateTab(11)">Cluster 8<span class="tab-count">75 samples</span></button><button class="tab-btn" data-tab="12" onclick="activateTab(12)">Cluster 15<span class="tab-count">70 samples</span></button><button class="tab-btn" data-tab="13" onclick="activateTab(13)">Cluster 20<span class="tab-count">48 samples</span></button><button class="tab-btn" data-tab="14" onclick="activateTab(14)">Cluster 18<span class="tab-count">39 samples</span></button><button class="tab-btn" data-tab="15" onclick="activateTab(15)">Cluster 1<span class="tab-count">39 samples</span></button><button class="tab-btn" data-tab="16" onclick="activateTab(16)">Cluster 17<span class="tab-count">36 samples</span></button><button class="tab-btn" data-tab="17" onclick="activateTab(17)">Cluster 3<span class="tab-count">22 samples</span></button><button class="tab-btn" data-tab="18" onclick="activateTab(18)">Cluster 4<span class="tab-count">21 samples</span></button><button class="tab-btn" data-tab="19" onclick="activateTab(19)">Cluster 7<span class="tab-count">20 samples</span></button><button class="tab-btn" data-tab="20" onclick="activateTab(20)">Cluster 14<span class="tab-count">14 samples</span></button><button class="tab-btn" data-tab="21" onclick="activateTab(21)">Cluster 9<span class="tab-count">7 samples</span></button><button class="tab-btn" data-tab="22" onclick="activateTab(22)">Cluster 6<span class="tab-count">6 samples</span></button><button class="tab-btn" data-tab="23" onclick="activateTab(23)">Cluster 0<span class="tab-count">3 samples</span></button><button class="tab-btn" data-tab="24" onclick="activateTab(24)">Cluster 10<span class="tab-count">2 samples</span></button></div></div><div class="container"><h1 class="report-title">Attribution Report</h1>
+        <section class="label-section" id="section-0">
+          <h2 class="label-header">Cluster -1</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster -1</span>
+              <span class="total">100 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_-1_combined.jpeg" />
+            <img class="view third"    data-src="cluster_-1_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-1">
+          <h2 class="label-header">Cluster 2</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 2</span>
+              <span class="total">100 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_2_combined.jpeg" />
+            <img class="view third"    data-src="cluster_2_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-2">
+          <h2 class="label-header">Cluster 5</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 5</span>
+              <span class="total">100 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_5_combined.jpeg" />
+            <img class="view third"    data-src="cluster_5_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-3">
+          <h2 class="label-header">Cluster 21</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 21</span>
+              <span class="total">100 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_21_combined.jpeg" />
+            <img class="view third"    data-src="cluster_21_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-4">
+          <h2 class="label-header">Cluster 12</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 12</span>
+              <span class="total">100 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_12_combined.jpeg" />
+            <img class="view third"    data-src="cluster_12_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-5">
+          <h2 class="label-header">Cluster 13</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 13</span>
+              <span class="total">100 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_13_combined.jpeg" />
+            <img class="view third"    data-src="cluster_13_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-6">
+          <h2 class="label-header">Cluster 23</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 23</span>
+              <span class="total">100 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_23_combined.jpeg" />
+            <img class="view third"    data-src="cluster_23_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-7">
+          <h2 class="label-header">Cluster 16</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 16</span>
+              <span class="total">100 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_16_combined.jpeg" />
+            <img class="view third"    data-src="cluster_16_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-8">
+          <h2 class="label-header">Cluster 11</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 11</span>
+              <span class="total">94 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_11_combined.jpeg" />
+            <img class="view third"    data-src="cluster_11_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-9">
+          <h2 class="label-header">Cluster 19</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 19</span>
+              <span class="total">89 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_19_combined.jpeg" />
+            <img class="view third"    data-src="cluster_19_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-10">
+          <h2 class="label-header">Cluster 22</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 22</span>
+              <span class="total">76 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_22_combined.jpeg" />
+            <img class="view third"    data-src="cluster_22_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-11">
+          <h2 class="label-header">Cluster 8</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 8</span>
+              <span class="total">75 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_8_combined.jpeg" />
+            <img class="view third"    data-src="cluster_8_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-12">
+          <h2 class="label-header">Cluster 15</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 15</span>
+              <span class="total">70 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_15_combined.jpeg" />
+            <img class="view third"    data-src="cluster_15_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-13">
+          <h2 class="label-header">Cluster 20</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 20</span>
+              <span class="total">48 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_20_combined.jpeg" />
+            <img class="view third"    data-src="cluster_20_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-14">
+          <h2 class="label-header">Cluster 18</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 18</span>
+              <span class="total">39 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_18_combined.jpeg" />
+            <img class="view third"    data-src="cluster_18_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-15">
+          <h2 class="label-header">Cluster 1</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 1</span>
+              <span class="total">39 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_1_combined.jpeg" />
+            <img class="view third"    data-src="cluster_1_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-16">
+          <h2 class="label-header">Cluster 17</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 17</span>
+              <span class="total">36 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_17_combined.jpeg" />
+            <img class="view third"    data-src="cluster_17_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-17">
+          <h2 class="label-header">Cluster 3</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 3</span>
+              <span class="total">22 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_3_combined.jpeg" />
+            <img class="view third"    data-src="cluster_3_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-18">
+          <h2 class="label-header">Cluster 4</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 4</span>
+              <span class="total">21 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_4_combined.jpeg" />
+            <img class="view third"    data-src="cluster_4_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-19">
+          <h2 class="label-header">Cluster 7</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 7</span>
+              <span class="total">20 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_7_combined.jpeg" />
+            <img class="view third"    data-src="cluster_7_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-20">
+          <h2 class="label-header">Cluster 14</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 14</span>
+              <span class="total">14 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_14_combined.jpeg" />
+            <img class="view third"    data-src="cluster_14_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-21">
+          <h2 class="label-header">Cluster 9</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 9</span>
+              <span class="total">7 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_9_combined.jpeg" />
+            <img class="view third"    data-src="cluster_9_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-22">
+          <h2 class="label-header">Cluster 6</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 6</span>
+              <span class="total">6 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_6_combined.jpeg" />
+            <img class="view third"    data-src="cluster_6_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-23">
+          <h2 class="label-header">Cluster 0</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 0</span>
+              <span class="total">3 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_0_combined.jpeg" />
+            <img class="view third"    data-src="cluster_0_third.jpeg"    style="display:none" />
+          </div>
+        </section>
+
+        <section class="label-section" id="section-24">
+          <h2 class="label-header">Cluster 10</h2>
+          <div class="grid-block">
+            <div class="grid-meta">
+              <span class="tag">cluster 10</span>
+              <span class="total">2 unique images</span>
+              <button class="toggle-btn" onclick="toggleView(this)" data-state="combined">
+                Show Pointwise multiplications
+              </button>
+            </div>
+            <img class="view combined" data-src="cluster_10_combined.jpeg" />
+            <img class="view third"    data-src="cluster_10_third.jpeg"    style="display:none" />
+          </div>
+        </section></div>
+<script>
+  function activateTab(tabId) {
+    // deactivate all
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.label-section').forEach(s => s.classList.remove('active'));
+
+    // activate target
+    const btn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+    const section = document.getElementById(`section-${tabId}`);
+    if (!btn || !section) return;
+    btn.classList.add('active');
+    section.classList.add('active');
+
+    // lazy load: move data-src -> src for images in this section
+    section.querySelectorAll('img[data-src]').forEach(img => {
+      img.src = img.dataset.src;
+      delete img.dataset.src;
+      img.addEventListener('load', () => img.classList.add('loaded'), { once: true });
+    });
+  }
+
+  function toggleView(btn) {
+    const block = btn.closest('.grid-block');
+    const combined = block.querySelector('.combined');
+    const third    = block.querySelector('.third');
+    if (btn.dataset.state === 'combined') {
+      combined.style.display = 'none';
+      third.style.display    = 'block';
+      btn.textContent        = 'Show Overlays';
+      btn.dataset.state      = 'third';
+    } else {
+      third.style.display    = 'none';
+      combined.style.display = 'block';
+      btn.textContent        = 'Show Pointwise multiplications';
+      btn.dataset.state      = 'combined';
+    }
+  }
+
+  // activate first tab on load
+  const firstTab = document.querySelector('.tab-btn');
+  if (firstTab) activateTab(firstTab.dataset.tab);
+</script>
+</body>
+</html>

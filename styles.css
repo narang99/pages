@@ -1,4 +1,11 @@
 
+.fig-inline-right {
+  float: right;
+  margin-left: 1em;
+  margin-bottom: 0.5em;
+  width: 18%;
+}
+
 .meme-right {
   float: right;
   margin-left: 1em;
@@ -7,3 +14,7 @@
 }
 
 
+.scrollable-tabset {
+  max-height: 600px;
+  overflow-y: auto;
+}
