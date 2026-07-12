@@ -94,7 +94,7 @@ Let's take a closer look at the `L` in `figure (c)`, focusing on the white box. 
 Some notation is helpful for the next discussion.   
 
 ::: {.fig-inline-right}
-![](./images/mnist-l2k5-L.jpeg)
+![](./images/mnist/receptive/l2k5-L.jpeg)
 :::
 
 - The layer we are interested in is $L_2$, a convolutional layer, a single input patch of this layer is shown on the right (it is the zoomed in view of the `L` in `figure (c)`)
@@ -397,7 +397,7 @@ The results are quite surprising.
 - The number of total points in a cluster generally exceeds the number of unique images in that cluster for many cases, meaning the same label is found multiple times within a single image. This is analogous to a diagonal edge detector activating multiple times along a long diagonal.
 
 
-There are one notable concern right now:
+There is one notable concern right now:
 
 - The majority of points were marked as noise — specifically 239,060 points.   
   - The raw pointwise multiplication vectors reveal very clean clusters, which makes the sheer volume of noise all the more concerning. Is this a coincidence? We address this in the next section.
@@ -682,7 +682,7 @@ Ever since we saw many clusters intersecting with the noise range (with some fra
 - `Car`, `Cat` and `Fox` have much higher activation values, and their ranges are also more spread out.
 - There are two `human faces` clusters: the first has almost all its values under 100, and the second is fully negative.
 - `Salamander`, `Snake`, and `repeated vertical lines` also have outputs very close to noise.
-- `Mushroom`, `Thin rod-like`, `Dog Legs`, `Fish`, and `Letters` have a many points outside the noise range, though they still intersect with it.
+- `Mushroom`, `Thin rod-like`, `Dog Legs`, `Fish`, and `Letters` have many points outside the noise range, though they still intersect with it.
 
 Here is another activation graph, for the neuron `mixed4d_pool_reduce_pre_relu_conv:29`.
 
@@ -877,7 +877,7 @@ Since a large number of neurons are used to identify the signal, the network see
 
 This robustness makes sense once you consider what a convolutional kernel actually does: a Hadamard product followed by a sum. Framed this way, using activation ranges as a signal of "activation" feels much closer to the underlying mechanism than something like cosine similarity would be.
 
-Putting this together, for `mixed4e_1x1_pre_relu_conv:55` at least, we can conclude that it heavily gets its signals from "activated" neurons, i.e., neurons emitting a value far from the noise range. These inputs also match with the clusters that have top activations for that neuron, which in turn gives us a way of finding these ranges directly (or perhaps a simpler heuristic suffices: points `0.75 noise radius away from the noise median`).  (More similar evidence for other neurons in this layer at [Appendix: Neuron Reports](#neuron-reports)).  
+Putting this together, for `mixed4e_1x1_pre_relu_conv:55` at least, we can conclude that it heavily gets its signals from "activated" neurons, i.e., neurons emitting a value far from the noise range. These inputs also match with the clusters that have top activations for that neuron, which in turn gives us a way of finding these ranges directly (or perhaps a simpler heuristic suffices: points `0.8 noise radius away from the noise median`).  (More similar evidence for other neurons in this layer at [Appendix: Neuron Reports](#neuron-reports)).  
 
 The simpler statement, that "maximum" is a sign of activation, is starting to hold up again.
 
@@ -947,11 +947,10 @@ Inputs.table(label_by_threshold, {
       - [Cluster 60 (foxes)](./reports/dependency-reports/mixed4e_1x1_pre_relu_conv/55/60/report.qmd)
       - [Cluster 61 (cats)](./reports/dependency-reports/mixed4e_1x1_pre_relu_conv/55/61/report.qmd)
   - `77` [Cluster Report](./reports/clusters/mixed4e_1x1_pre_relu_conv/77/index.html) 
-    - [Dependency Report, cluster 22 (leapord)](./reports/dependency-reports/mixed4e_1x1_pre_relu_conv/77/22/report.qmd)
+    - [Dependency Report, cluster 22 (leopard)](./reports/dependency-reports/mixed4e_1x1_pre_relu_conv/77/22/report.qmd)
       - The first neuron is concerning. Clusters do look like they are finding some repeated pattern, it is not clear what they are though. Feature visualisations are also given for this neuron.
-      - Many of the neurons are finding some patchy repeating patterns (patterns on snakes, birds, leapords). We also have a white furr match. We do see a lot of leapord patches too.  
-neuron might be concerning?
- `25` [Cluster Report](./reports/clusters/mixed4e_1x1_pre_relu_conv/25/index.html)
+      - Many of the neurons are finding some patchy repeating patterns (patterns on snakes, birds, leopards). We also have a white fur match. We do see a lot of leopard patches too.
+  - `25` [Cluster Report](./reports/clusters/mixed4e_1x1_pre_relu_conv/25/index.html)
     - [Dependency Report, cluster 15 (car wheels)](./reports/dependency-reports/mixed4e_1x1_pre_relu_conv/25/15/report.qmd)
       - A diverse class of circular features like `camera lens`, `bead-like` structures, `eyes`, `snout` and a lot of `wheels` are observed.  
 
