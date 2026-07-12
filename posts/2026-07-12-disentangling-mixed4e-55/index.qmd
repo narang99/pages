@@ -18,6 +18,7 @@ bibliography:
   - ./bibs/vis-weights.bib
   - ./bibs/cut_neuron_into_monosemantic_neurons.bib
   - ./bibs/concept_vectors.bib
+  - ./bibs/intriguing_props.bib
 resources:
   - "reports/**"
   - "images/**"
@@ -42,11 +43,11 @@ Researchers have used feature visualisation [@olah2017feature] to guess what a n
 Example Feature visualisation results for mixed4e:55, generated using [lucent](https://github.com/greentfrapp/lucent). The shiny surfaces are supposed to be front of cars, we also see eyes, whiskers, snouts
 :::
 
-
-
 A lot of interpretability research tries to find patterns by decomposing intermediate activations of a layer. We revisit that approach here, tagging what each neuron is detecting by looking at the patterns it detects. Concretely, we cluster the Hadamard product of every high-attribution receptive field of the neuron with its weights. This assigns a group to every output activation of that neuron, based on what the neuron is "seeing".
 
-This gets us a long way toward disentangling `mixed4e:55`, but it also raises a harder question: what does it actually mean for a neuron to be "activated"? Is a high activation value enough to say the neuron has found its concept, or can a neuron "see" a pattern without its activation reflecting it? The second half of this article is spent answering that question.
+We expected we would need to label every neuron for a given input across the network, and that the resulting graph of these annotated inputs would provide disentanglement. Instead, just annotating this single neuron already gets us a long way toward disentangling it: we find many more clusters than expected. Along with the familiar cat, snout, and cars, we get clusters for letters, human faces, salamanders, and more, many of non-trivial size. Not every cluster, however, produced high-activation patterns.
+
+It thus raises a harder question: what does it actually mean for a neuron to be "activated"? Is a high activation value enough to say the neuron has found its concept? The second half of this article is spent answering that question.
 
 
 # Related work
@@ -57,10 +58,15 @@ Many researchers have found success clustering a layer's output by working with 
 
 [@hesse2025disentanglingpolysemanticchannelsconvolutional] take a different approach, working with attribution rather than raw activations. For a channel found to be relevant to multiple classes, they compute an Average Relevance Vector per class, capturing how each channel in the previous layer contributes to the target channel's activation for images of that class. Comparing these per-class attribution patterns lets them identify when a channel is encoding distinct concepts, and they restructure the network's weights to split such a channel into separate, monosemantic channels. Our analysis of some of these neurons confirms this: at least for examples where the neuron is highly activated, a distinct set of previous-layer neurons is activated for each monosemantic concept. Taking the Hadamard product with the weight achieves something similar more automatically, since it removes the non-contributing neurons.
 
-Our contribution in this article is twofold:
+[@szegedy2014intriguingpropertiesneuralnetworks] noticed that instead of maximising a single neuron's output, one could maximise a random weighted combination of the outputs of all neurons in a layer and still obtain interpretable concepts. Maximising the output of a neuron in the next layer is loosely equivalent to this strategy, using that neuron's own weights as the combination.
 
-- The approach we use is simpler and closer to how the raw machinery of a convolution works. It also surfaces many recurring patterns a neuron responds to that, as far as we know, have not been reported before.
-- We investigate whether these newly found patterns, which don't produce a high activation from the neuron, have any effect on the next layer. This leads us into what it actually means for a neuron to "activate," and when its signal ends up being used or visible to the next layer.
+Our contribution in this article:
+
+- The approach we use is simpler, and closer to how the raw machinery of a convolution actually works. It also surfaces many recurring patterns a neuron responds to that, as far as we know, have not been reported before.
+- The field has generally moved on from analysing individual neurons toward analysing combinations of neurons in activation space. Using the Hadamard product lets us do exactly this, with the added advantage that it also helps us label what each individual neuron "sees".
+- We investigate whether these newly found patterns, ones that don't produce a high activation from the neuron, have any effect on the next layer. This leads us to what it actually means for a neuron to "activate," and when its signal ends up being used, or visible, by the next layer, at least in the context of 1x1 convolutions in the `mixed4e_1x1_pre_relu_conv` layer of InceptionV1 (the only type of example we have studied).
+
+
 
 # Looking at a simple model
 
