@@ -16,14 +16,16 @@ bibliography:
   - ./bibs/imagenet.bib
   - ./bibs/weight-banding.bib
   - ./bibs/vis-weights.bib
+  - ./bibs/cut_neuron_into_monosemantic_neurons.bib
+  - ./bibs/concept_vectors.bib
 resources:
   - "reports/**"
   - "images/**"
 abstract: |
-  Instead of using activation space as a marker of what concept a convolutional kernel has found, we tag every pattern a neuron "sees" across examples by clustering the Hadamard product of each high-attribution receptive fields with the kernel's weights. This simple procedure provides substantial disentanglement. We closely analyse the convolutional kernel `mixed4e_1x1_pre_relu_conv:55`, a well-known polysemantic neuron, and find a large number of non-trivial clusters for it, raising the question of what it means for a neuron to be "activated." Is it simply a high positive activation? To answer this, we closely examine how `mixed4e_1x1_pre_relu_conv:55` decides whether something is a `cat` (or any other concept) and observe a large number of previous-layer neurons activating for concepts related to a `cat` face (`dog` faces too), each providing non-trivial contribution to `mixed4e_1x1_pre_relu_conv:55`'s final output. We also find that all the substantial input signals come from maximum-activating clusters, providing some more evidence for the widespread hypothesis that a neuron is "activated" when it emits a high activation value.
+  Instead of using activation space as a marker of what concept a convolutional kernel has found, we tag every pattern a neuron "sees" across examples by clustering the Hadamard product of each high-attribution receptive field with the kernel's weights. This simple procedure provides substantial disentanglement. We closely analyse the convolutional kernel `mixed4e_1x1_pre_relu_conv:55`, a well-known polysemantic neuron, and find a large number of non-trivial clusters for it, raising the question of what it means for a neuron to be "activated." Is it simply a high positive activation? To answer this, we closely examine how `mixed4e_1x1_pre_relu_conv:55` decides whether something is a `cat` (or any other concept), and observe a large number of previous-layer neurons activating for cat-face-like concepts (dog faces too), each contributing non-trivially to `mixed4e_1x1_pre_relu_conv:55`'s final output. We also find that all the substantial input signals come from maximum-activating clusters, providing evidence for the widespread hypothesis that a neuron is "activated" when it emits a high activation value.
 ---
 
-Individual neurons in a convolutional neural network can activate on diverse "concepts". Sometimes these concepts are similar, like a group of diagonal edges. Sometimes they are extremely different. A famous example which activates on unrelated concepts is the neuron at channel 55, in layer mixed4e, of the inceptionv1 neural network, described in [@olah2020zoom]. It activates on cats, snouts, and surprisingly, cars. This phenomenon of neurons activating on totally unrelated concepts is called polysemanticity. Precisely identifying when a neuron activates for a single concept, like snout, is called disentangling, which is the topic of this article.  
+Individual neurons in a convolutional neural network can activate on diverse "concepts". Sometimes these concepts are similar, like a group of diagonal edges. Sometimes they are extremely different. A famous example which activates on unrelated concepts is the neuron at channel 55, in layer mixed4e, of the inceptionv1 neural network, described in [@olah2020zoom]. It activates on cats, snouts, and surprisingly, cars. This phenomenon of neurons activating on totally unrelated concepts is called polysemanticity. Precisely identifying when a neuron activates for a single concept, like snout, is called disentangling, which is the topic of this article.
 
 Researchers have used feature visualisation [@olah2017feature] to guess what a neuron maximally activates on (in positive and negative directions).  In feature visualisation, we optimise the input image to maximise the activation of a certain neuron, with the hope that the images for which the neuron has maximum activations are the patterns it is looking for. For the purposes of this article, knowing this much is enough.   
 
@@ -42,15 +44,33 @@ Example Feature visualisation results for mixed4e:55, generated using [lucent](h
 
 
 
-A lot of interpretability research tries to find patterns by decomposing intermediate activations of a layer. We would like revisit that approach. We'll start by motivating with an example of a simple curve detector in a 2 layer convolutional model trained on MNIST dataset.  
+A lot of interpretability research tries to find patterns by decomposing intermediate activations of a layer. We revisit that approach here, tagging what each neuron is detecting by looking at the patterns it detects. Concretely, we cluster the Hadamard product of every high-attribution receptive field of the neuron with its weights. This assigns a group to every output activation of that neuron, based on what the neuron is "seeing".
+
+This gets us a long way toward disentangling `mixed4e:55`, but it also raises a harder question: what does it actually mean for a neuron to be "activated"? Is a high activation value enough to say the neuron has found its concept, or can a neuron "see" a pattern without its activation reflecting it? The second half of this article is spent answering that question.
+
+
+# Related work
+
+Many researchers have found success clustering a layer's output by working with the full channel vector at a given spatial position, or by folding that vector across channels in some way before clustering.
+
+[@omahony2023disentanglingneuronrepresentationsconcept] take the images that maximally activate a given neuron, reduce each feature map to a single value per channel via global average pooling, and cluster these pooled vectors using Euclidean distance and K-means.
+
+[@hesse2025disentanglingpolysemanticchannelsconvolutional] take a different approach, working with attribution rather than raw activations. For a channel found to be relevant to multiple classes, they compute an Average Relevance Vector per class, capturing how each channel in the previous layer contributes to the target channel's activation for images of that class. Comparing these per-class attribution patterns lets them identify when a channel is encoding distinct concepts, and they restructure the network's weights to split such a channel into separate, monosemantic channels. Our analysis of some of these neurons confirms this: at least for examples where the neuron is highly activated, a distinct set of previous-layer neurons is activated for each monosemantic concept. Taking the Hadamard product with the weight achieves something similar more automatically, since it removes the non-contributing neurons.
+
+Our contribution in this article is twofold:
+
+- The approach we use is simpler and closer to how the raw machinery of a convolution works. It also surfaces many recurring patterns a neuron responds to that, as far as we know, have not been reported before.
+- We investigate whether these newly found patterns, which don't produce a high activation from the neuron, have any effect on the next layer. This leads us into what it actually means for a neuron to "activate," and when its signal ends up being used or visible to the next layer.
+
+# Looking at a simple model
+
+We'll start by motivating with an example of a simple curve detector in a 2 layer convolutional model trained on MNIST dataset.  
 
 ::: {.callout-tip}
 
 It is recommended to read this article in the dark mode.  
 
 :::
-
-# Looking at a simple model
 
 In the figure below, we see the intermediate activations of the model when it was fed an image of the digit "9".  
 
