@@ -30,18 +30,8 @@ Individual neurons in a convolutional neural network can activate on diverse "co
 
 Researchers have used feature visualisation [@olah2017feature] to guess what a neuron maximally activates on (in positive and negative directions).  In feature visualisation, we optimise the input image to maximise the activation of a certain neuron, with the hope that the images for which the neuron has maximum activations are the patterns it is looking for. For the purposes of this article, knowing this much is enough.   
 
-::: {#fig-feature-viz-mixed4e-55 layout-ncol=4}
+![Example Feature visualisation results for mixed4e:55, generated using [lucent](https://github.com/greentfrapp/lucent). The shiny surfaces are supposed to be front of cars, we also see eyes, whiskers, snouts](./images/feature-vis-4e55-diversity.jpeg)
 
-![](./images/feature-viz/mixed4e-55/f0.jpeg){width="100%"}
-
-![](./images/feature-viz/mixed4e-55/f1.jpeg){width="100%"}
-
-![](./images/feature-viz/mixed4e-55/f2.jpeg){width="100%"}
-
-![](./images/feature-viz/mixed4e-55/f3.jpeg){width="100%"}
-
-Example Feature visualisation results for mixed4e:55, generated using [lucent](https://github.com/greentfrapp/lucent). The shiny surfaces are supposed to be front of cars, we also see eyes, whiskers, snouts
-:::
 
 A lot of interpretability research tries to find patterns by decomposing intermediate activations of a layer. We revisit that approach here, tagging what each neuron is detecting by looking at the patterns it detects. Concretely, we cluster the Hadamard product of every high-attribution receptive field of the neuron with its weights. This assigns a group to every output activation of that neuron, based on what the neuron is "seeing".
 
@@ -85,18 +75,7 @@ The color map we use for visualising intermediate activations uses green for pos
 A higher positive value would have brighter green. A negative value with higher absolute value would have a brighter red. This scheme is followed throughout the article.  
 :::
 
-::: {#fig-mnist-curve layout-ncol=4}
-
-![Input image](./images/mnist/activations/input.jpeg){#fig-mnist-input width="100%"}
-
-![Conv Layer 0, 5th channel output](./images/mnist/activations/l0k5.jpeg){#fig-mnist-l0-k5-out width="100%" style="aspect-ratio: 1/1; object-fit: cover;"}
-
-![5th channel of input to Layer 2, after a ReLU](./images/mnist/activations/l2k5.jpeg){#fig-mnist-relu-k5-out width="100%" style="aspect-ratio: 1/1; object-fit: cover;"}
-
-![Layer 2, Channel 0, Slice 5 weights](./images/mnist/activations/l2k5-kernel-slice.jpeg){#fig-mnist-l2-k5-out width="100%" style="aspect-ratio: 1/1; object-fit: cover;"}
-
-Activations for detecting a "9" inside a 2-layer convolutional MNIST network. The rightmost image is a slice of a convolutional kernel's weights.  
-:::
+[Activations for detecting a "9" inside a 2-layer convolutional MNIST network. The rightmost image is a slice of a convolutional kernel's weights.  ](./images/mnist-all-mid-acts.jpeg)
 
 There is a simple and elegant machinery here to detect a curve in the above images.
 
@@ -130,20 +109,7 @@ Some notation is helpful for the next discussion.
 
 Below are the receptive fields of the pixels which are green in $O$.
 
-::: {#fig-receptive-fields layout-ncol=5}
-
-![(a)](./images/mnist/receptive/l2k5-receptive-2-0.jpeg){width="100%" style="aspect-ratio: 1/1; object-fit: cover;"}
-
-![(b)](./images/mnist/receptive/l2k5-receptive-0-0.jpeg){width="100%" style="aspect-ratio: 1/1; object-fit: cover;"}
-
-![(c)](./images/mnist/receptive/l2k5-receptive-2-1.jpeg){width="100%" style="aspect-ratio: 1/1; object-fit: cover;"}
-
-![(d)](./images/mnist/receptive/l2k5-receptive-2-2.jpeg){width="100%" style="aspect-ratio: 1/1; object-fit: cover;"}
-
-![(e)](./images/mnist/receptive/l2k5-receptive-1-0.jpeg){width="100%" style="aspect-ratio: 1/1; object-fit: cover;"}
-
-The receptive fields 
-:::
+![The receptive fields](./images/mnist-all-patches.jpeg)
 
 
 We've intentionally not labeled the receptive fields because the labels and locations of patches are not visible to a convolutional kernel. 
