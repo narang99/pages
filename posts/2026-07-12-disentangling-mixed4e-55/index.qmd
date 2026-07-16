@@ -4,7 +4,7 @@ description: Disentangling the famous neuron mixed4e:55 in inceptionv1
 categories: [AI, Interpretability]
 author: Hariom Narang
 date: 'July 12, 2026'
-bibliography: 
+bibliography:
   - ./bibs/olah2020zoom.bib
   - ./bibs/olah2017feature.bib
   - ./bibs/lrp.bib
@@ -28,7 +28,7 @@ abstract: |
 
 Individual neurons in a convolutional neural network can activate on diverse "concepts". Sometimes these concepts are similar, like a group of diagonal edges. Sometimes they are extremely different. A famous example which activates on unrelated concepts is the neuron at channel 55, in layer mixed4e, of the inceptionv1 neural network, described in [@olah2020zoom]. It activates on cats, snouts, and surprisingly, cars. This phenomenon of neurons activating on totally unrelated concepts is called polysemanticity. Precisely identifying when a neuron activates for a single concept, like snout, is called disentangling, which is the topic of this article.
 
-Researchers have used feature visualisation [@olah2017feature] to guess what a neuron maximally activates on (in positive and negative directions).  In feature visualisation, we optimise the input image to maximise the activation of a certain neuron, with the hope that the images for which the neuron has maximum activations are the patterns it is looking for. For the purposes of this article, knowing this much is enough.   
+Researchers have used feature visualisation [@olah2017feature] to guess what a neuron maximally activates on (in positive and negative directions).  In feature visualisation, we optimise the input image to maximise the activation of a certain neuron, with the hope that the images for which the neuron has maximum activations are the patterns it is looking for. For the purposes of this article, knowing this much is enough.
 
 ![Example Feature visualisation results for mixed4e:55, generated using [lucent](https://github.com/greentfrapp/lucent). The shiny surfaces are supposed to be front of cars, we also see eyes, whiskers, snouts](./images/feature-vis-4e55-diversity.jpeg)
 
@@ -60,92 +60,92 @@ Our contribution in this article:
 
 # Looking at a simple model
 
-We'll start by motivating with an example of a simple curve detector in a 2 layer convolutional model trained on MNIST dataset.  
+We'll start by motivating with an example of a simple curve detector in a 2 layer convolutional model trained on MNIST dataset.
 
 ::: {.callout-tip}
 
-It is recommended to read this article in the dark mode.  
+It is recommended to read this article in the dark mode.
 
 :::
 
-In the figure below, we see the intermediate activations of the model when it was fed an image of the digit "9".  
+In the figure below, we see the intermediate activations of the model when it was fed an image of the digit "9".
 
 ::: {.callout-note}
-The color map we use for visualising intermediate activations uses green for positive values, red for negative values, and black for 0.  
-A higher positive value would have brighter green. A negative value with higher absolute value would have a brighter red. This scheme is followed throughout the article.  
+The color map we use for visualising intermediate activations uses green for positive values, red for negative values, and black for 0.
+A higher positive value would have brighter green. A negative value with higher absolute value would have a brighter red. This scheme is followed throughout the article.
 :::
 
 [Activations for detecting a "9" inside a 2-layer convolutional MNIST network. The rightmost image is a slice of a convolutional kernel's weights.  ](./images/mnist-all-mid-acts.jpeg)
 
 There is a simple and elegant machinery here to detect a curve in the above images.
 
-- Layer 0, Kernel 5 detects vertical, horizontal and diagonal edges (of `\` orientation).  
-- Layer 2, Kernel 0, Slice 5 detects an `L` (highlighted in the 3rd image with a white box).  
-  - Notice that the kernel (the rightmost image) has an `L` pattern.  
-- The vertical portion of the `L` corresponds to a vertical edge, the horizontal portion can correspond to a `\` diagonal, or a horizontal edge. Together, they detect a curve at the bottom-right part of the image.  
+- Layer 0, Kernel 5 detects vertical, horizontal and diagonal edges (of `\` orientation).
+- Layer 2, Kernel 0, Slice 5 detects an `L` (highlighted in the 3rd image with a white box).
+  - Notice that the kernel (the rightmost image) has an `L` pattern.
+- The vertical portion of the `L` corresponds to a vertical edge, the horizontal portion can correspond to a `\` diagonal, or a horizontal edge. Together, they detect a curve at the bottom-right part of the image.
 
 
 ::: {.callout-caution}
-Layer 2, Kernel 0 has shape `[8,3,3]` (8 in-channels). It is technically a "cube". I have only shown the intermediate output of the 5th channel inside this `[8,3,3]` kernel.  
-I made the classic mistake of visualising and analysing a 3D convolutional kernel by splitting it into 2D slices and checking their outputs. This is quite dangerous as it simply assigns a human interpretation on what the kernel is doing (we see the world of images in 2D structures). This approach of looking at slices is incorrect.  
+Layer 2, Kernel 0 has shape `[8,3,3]` (8 in-channels). It is technically a "cube". I have only shown the intermediate output of the 5th channel inside this `[8,3,3]` kernel.
+I made the classic mistake of visualising and analysing a 3D convolutional kernel by splitting it into 2D slices and checking their outputs. This is quite dangerous as it simply assigns a human interpretation on what the kernel is doing (we see the world of images in 2D structures). This approach of looking at slices is incorrect.
 
-Nevertheless, the example is quite interesting in itself and is useful in motivating a way for analysing the network.   
+Nevertheless, the example is quite interesting in itself and is useful in motivating a way for analysing the network.
 :::
 
 
 
 Let's take a closer look at the `L` in `figure (c)`, focusing on the white box. We will not look at any of the full "images" (activations or the original input image). We would instead like to think like a convolutional kernel, and only observe what a kernel notices in a set of operations.
 
-Some notation is helpful for the next discussion.   
+Some notation is helpful for the next discussion.
 
 ::: {.fig-inline-right}
 ![](./images/mnist/receptive/l2k5-L.jpeg)
 :::
 
 - The layer we are interested in is $L_2$, a convolutional layer, a single input patch of this layer is shown on the right (it is the zoomed in view of the `L` in `figure (c)`)
-- The previous convolutional layer is $L_0$ (we are ignoring the ReLU layer at $L_1$).  
-- We denote individual pixels in the output patch at location $(r,c)$ as $O_{rc}$. The whole 3x3 output patch is denoted by $O$.  
-  - Their receptive fields in $L_0$'s input are denoted using $I_{rc}$. 
+- The previous convolutional layer is $L_0$ (we are ignoring the ReLU layer at $L_1$).
+- We denote individual pixels in the output patch at location $(r,c)$ as $O_{rc}$. The whole 3x3 output patch is denoted by $O$.
+  - Their receptive fields in $L_0$'s input are denoted using $I_{rc}$.
 
 Below are the receptive fields of the pixels which are green in $O$.
 
 ![The receptive fields](./images/mnist-all-patches.jpeg)
 
 
-We've intentionally not labeled the receptive fields because the labels and locations of patches are not visible to a convolutional kernel. 
+We've intentionally not labeled the receptive fields because the labels and locations of patches are not visible to a convolutional kernel.
 
-Can we guess what they are? We can't do that without looking at the image patch $O$.  
+Can we guess what they are? We can't do that without looking at the image patch $O$.
 
--  We notice that `(b)` and `(e)` look like a vertical edge. After looking at $O$, we can deduce that `(b)` and `(e)` might be a subset of $\{I_{00}, I_{10}, I_{20}\}$.  
-- `(a)` looks like the bottom of a curve coming from top and going to the right, we can therefore guess that `(a)` is $I_{20}$.  
+-  We notice that `(b)` and `(e)` look like a vertical edge. After looking at $O$, we can deduce that `(b)` and `(e)` might be a subset of $\{I_{00}, I_{10}, I_{20}\}$.
+- `(a)` looks like the bottom of a curve coming from top and going to the right, we can therefore guess that `(a)` is $I_{20}$.
   - This makes `(b)` and `(e)` form the set $\{I_{00}, I_{10}\}$
-- Similarly, `(c)` is $I_{21}$, `(d)` is $I_{22}$.  
+- Similarly, `(c)` is $I_{21}$, `(d)` is $I_{22}$.
 
-The point is, we can't know what pattern $L_0$'s input had, without looking at the input patch of $L_2$. The converse is also true, just by looking at the input $L_2$, we can't surely say what the exact input actually was. As an example, the image `(d)` is an incomplete horizontal line, it could be a full horizontal line and we might get the exact same output (with the same pixel intensity).   
+The point is, we can't know what pattern $L_0$'s input had, without looking at the input patch of $L_2$. The converse is also true, just by looking at the input $L_2$, we can't surely say what the exact input actually was. As an example, the image `(d)` is an incomplete horizontal line, it could be a full horizontal line and we might get the exact same output (with the same pixel intensity).
 
-Taken together however, we can make reasonable guesses about what the input pattern might look like. They "disentangle" the input pattern that we detected in $L_2$.   
+Taken together however, we can make reasonable guesses about what the input pattern might look like. They "disentangle" the input pattern that we detected in $L_2$.
 
-> We want to label every pattern that is detected by every single neuron in the network. The graph formed by these labels uniquely identifies what the network "thinks" about the input image. Every graph points to a unique pattern.   
+> We want to label every pattern that is detected by every single neuron in the network. The graph formed by these labels uniquely identifies what the network "thinks" about the input image. Every graph points to a unique pattern.
 
-There are many problems however, with this manual approach of assigning a concept to each number.  
+There are many problems however, with this manual approach of assigning a concept to each number.
 
 - It is very laborious and can't scale. It also gets very boring after the initial novelty wears off.
-- Labeling manually is also very subjective, do you keep a diagonal at 45 degrees in the same label as a diagonal at 50 degrees?  
-- Perhaps the biggest problem is that convolutional kernels are 3D, not 2D. It is quite hard to spot patterns in this case.  
+- Labeling manually is also very subjective, do you keep a diagonal at 45 degrees in the same label as a diagonal at 50 degrees?
+- Perhaps the biggest problem is that convolutional kernels are 3D, not 2D. It is quite hard to spot patterns in this case.
 
-It is now useful to step back and think about what we are doing when we say "the kernel detected a horizontal line at this location". We are essentially grouping the unique patterns a convolutional kernel finds. Clustering does this for us automatically. 
+It is now useful to step back and think about what we are doing when we say "the kernel detected a horizontal line at this location". We are essentially grouping the unique patterns a convolutional kernel finds. Clustering does this for us automatically.
 
-Can we cluster the input patches $I_{rc}$ directly to assign a cluster label to every number $O_{rc}$? There is one small problem though. Weights (denoted by $W$) of a convolutional kernel can be quite sparse. If there is a near 0 value in the weight, it does not matter what the corresponding input number is. This can confuse our clustering algorithm.   
-We instead cluster the Hadamard Product of the the weight $W$ and the input patch $I_{rc}$. This makes more intuitive sense too, we are clustering the patterns a convolutional kernel "likes".   
-In this article, the Hadamard Product is used interchangeably with the phrase "pointwise multiplications".   
+Can we cluster the input patches $I_{rc}$ directly to assign a cluster label to every number $O_{rc}$? There is one small problem though. Weights (denoted by $W$) of a convolutional kernel can be quite sparse. If there is a near 0 value in the weight, it does not matter what the corresponding input number is. This can confuse our clustering algorithm.
+We instead cluster the Hadamard Product of the the weight $W$ and the input patch $I_{rc}$. This makes more intuitive sense too, we are clustering the patterns a convolutional kernel "likes".
+In this article, the Hadamard Product is used interchangeably with the phrase "pointwise multiplications".
 
 
-There is one more engineering challenge. The dataset for clustering for a given neuron would be huge, even for a modest number of images. It is not feasible to cluster them all. To address this, we filter the dataset to retain only points with high attribution for the target class.  
+There is one more engineering challenge. The dataset for clustering for a given neuron would be huge, even for a modest number of images. It is not feasible to cluster them all. To address this, we filter the dataset to retain only points with high attribution for the target class.
 We assume here that points with low attribution are "noise" and thus can be ignored.
 
 ---
 
-This article is only about labeling. We will see that we get remarkably far by just labeling.  
+This article is only about labeling. We will see that we get remarkably far by just labeling.
 
 
 ::: {.callout-note collapse="true" title="On dictionary learning"}
@@ -163,7 +163,7 @@ We will see however, that our clustering might not be the right answer in the en
 
 # Algorithm
 
-For a given kernel at output channel $C$ for convolutional layer $L$ (i.e. a neuron), we want to assign a label to each output activation $O_{rc}$, which captures the concept the neuron detected at the location $(r,c)$ in the output activation $O$.  
+For a given kernel at output channel $C$ for convolutional layer $L$ (i.e. a neuron), we want to assign a label to each output activation $O_{rc}$, which captures the concept the neuron detected at the location $(r,c)$ in the output activation $O$.
 
 ::: {.aside}
 Note that we are assigning the concept to points in the **output** activation, not the input.
@@ -175,10 +175,10 @@ All experiments use a filtered subset of the [ImageNet-1K](https://huggingface.c
 
 ---
 
-- **Compute attributions.** Use Integrated Gradients [@DBLP:journals/corr/SundararajanTY17]  to compute, for each image in the dataset, the contribution of every output activation of the neuron toward the predicted ImageNet category. 
+- **Compute attributions.** Use Integrated Gradients [@DBLP:journals/corr/SundararajanTY17]  to compute, for each image in the dataset, the contribution of every output activation of the neuron toward the predicted ImageNet category.
   - Two algorithms were considered for calculating attributions: Integrated Gradients and DeepLIFT [@DBLP:journals/corr/ShrikumarGK17]. In the initial experiments, DeepLIFT was observed to find fewer examples per cluster. This is not thoroughly validated, and may be an artifact of iterative exploration of methods in the early testing.
 
-- **Identify high-attribution points.** For each ImageNet category, find a positive and negative attribution threshold independently using the elbow method. There is no global threshold — each category is thresholded separately. Since the downstream clustering algorithm handles noise, the threshold only needs to coarsely filter out low-attribution points; it does not need to be precise. More details in the [Appendix](#on-attribution-thresholds).  
+- **Identify high-attribution points.** For each ImageNet category, find a positive and negative attribution threshold independently using the elbow method. There is no global threshold — each category is thresholded separately. Since the downstream clustering algorithm handles noise, the threshold only needs to coarsely filter out low-attribution points; it does not need to be precise. More details in the [Appendix](#on-attribution-thresholds).
 
 - **Extract the dataset.** For each high-attribution activation, extract the corresponding input patch of shape `[C_in, K, K]`, where `C_in` is the number of input channels and `K` is the kernel size — this patch represents the local receptive field of that spatial location. Take the Hadamard product of each extracted patch with the neuron's learned weights, flatten, and L2-normalize the result. These vectors form our dataset $\mathcal{D}$.
   - Specifically `sklearn.preprocessing.normalize(data, "l2")` was used for normalizing. Clustering results are not good without this normalization.
@@ -186,22 +186,22 @@ All experiments use a filtered subset of the [ImageNet-1K](https://huggingface.c
   - We will see why L2-normalization was important for getting good cluster results [later in the article](#analysing-the-connection-with-the-previous-layer).
 
 - **Cluster.** Run a clustering algorithm (HDBSCAN [@10.1007/978-3-642-37456-2_14]) over $\mathcal{D}$. Each point is assigned a cluster label, with `-1` reserved for noise.
-  - HDBSCAN  was used with the settings `cluster_selection_method=leaf`. The `eom` method was observed to collapse different categories into the same cluster. `min_cluster_size` was tweaked to get "good" clusters. In our experience, same settings worked reasonably well for a whole layer.  
+  - HDBSCAN  was used with the settings `cluster_selection_method=leaf`. The `eom` method was observed to collapse different categories into the same cluster. `min_cluster_size` was tweaked to get "good" clusters. In our experience, same settings worked reasonably well for a whole layer.
 
 ---
 
 
 **Visualisation**
 
-After this process, we have assigned a label to each number in the output activation of our neuron. It is not easy to interpret the clustering results. An example cluster:  
+After this process, we have assigned a label to each number in the output activation of our neuron. It is not easy to interpret the clustering results. An example cluster:
 
 ![](./images/mixed4e_55_clusters/acts/fox.jpeg)
 
 ::: {.callout-important}
 
-Although each sample is visualised as a 2D image, in reality, these are 1D vectors, we reshape these vectors for easier visualisation. In the case above, the actual vector has shape `(528,)` and it was reshaped to `(22,24)` for easier visualisation.  
+Although each sample is visualised as a 2D image, in reality, these are 1D vectors, we reshape these vectors for easier visualisation. In the case above, the actual vector has shape `(528,)` and it was reshaped to `(22,24)` for easier visualisation.
 
-This convention is followed throughout the article.  
+This convention is followed throughout the article.
 
 :::
 
@@ -211,11 +211,11 @@ We would like to see the cluster in terms of the input image. To understand what
 
 ::: {.aside}
 
-Notice the bright green or bright red spots in the images below, those are the attribution overlay points.  
-As before, a brighter green means a higher positive value. A brighter red means a negative value with higher absolute value.  
-Absence of any overlay/color means that the attribution of that pixel is close to 0 (it does not affect the activation we are interested in).  
+Notice the bright green or bright red spots in the images below, those are the attribution overlay points.
+As before, a brighter green means a higher positive value. A brighter red means a negative value with higher absolute value.
+Absence of any overlay/color means that the attribution of that pixel is close to 0 (it does not affect the activation we are interested in).
 
-For the examples above, we see bright green spots on the snouts of these animals.  
+For the examples above, we see bright green spots on the snouts of these animals.
 :::
 
 For these overlays specifically — a separate step from the clustering-attribution filter described above — we have used DeepLIFT because its quality is comparable to Integrated Gradients and is substantially faster (see [NeuronDeepLift](https://captum.ai/api/neuron.html#neuron-deeplift)).
@@ -228,11 +228,11 @@ For these overlays specifically — a separate step from the clustering-attribut
 ::: {.fig-inline-right}
 ![](./images/feature-viz/mixed4e_1x1_pre_relu_conv-55-feature-vis.jpeg)
 :::
-`mixed4e` is a concatenation of four parallel branches in the Inception module. Since we work with convolutional layers, we trace back to the first ancestral convolutional neuron preceding `mixed4e:55`, which is `mixed4e_1x1_pre_relu_conv:55`. On the right, we have the feature visualisation of this neuron, confirming that it has similar characteristics to `mixed4e:55`.  
+`mixed4e` is a concatenation of four parallel branches in the Inception module. Since we work with convolutional layers, we trace back to the first ancestral convolutional neuron preceding `mixed4e:55`, which is `mixed4e_1x1_pre_relu_conv:55`. On the right, we have the feature visualisation of this neuron, confirming that it has similar characteristics to `mixed4e:55`.
 
 
 
-The results of the clustering setup described in the previous section are presented below.  
+The results of the clustering setup described in the previous section are presented below.
 
 ::: {.panel-tabset}
 
@@ -342,17 +342,17 @@ The results of the clustering setup described in the previous section are presen
 document.addEventListener("DOMContentLoaded", function() {
   const toggleBtn = document.getElementById("toggle-image-set");
   const images = document.querySelectorAll(".toggle-img");
-  
+
   let showingAlt = false;
 
   toggleBtn.addEventListener("click", function() {
     showingAlt = !showingAlt;
-    
+
     images.forEach(img => {
       // Swap the current src with the stored data-alt attribute
       const currentSrc = img.getAttribute("src");
       const altSrc = img.getAttribute("data-alt");
-      
+
       img.setAttribute("src", altSrc);
       img.setAttribute("data-alt", currentSrc);
     });
@@ -373,18 +373,18 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 ::: {.callout-tip title="How to interpret the visualisation"}
-Each tab represents a cluster, I've assigned a human-readable label after looking at them.  
-You can click on the `Click to See Raw Clustered Pointwise Multiplications` button above to see the raw pointwise multiplications used in clustering corresponding to the visualised overlay.  
+Each tab represents a cluster, I've assigned a human-readable label after looking at them.
+You can click on the `Click to See Raw Clustered Pointwise Multiplications` button above to see the raw pointwise multiplications used in clustering corresponding to the visualised overlay.
 
-Each image has a `<number>/<number>` title. The first number is the ImageNet label of that image, the second number is the count of unique images with at least one activation clustered in this category.  
+Each image has a `<number>/<number>` title. The first number is the ImageNet label of that image, the second number is the count of unique images with at least one activation clustered in this category.
 
-The visualisation is done by taking the first 2 rows for each cluster from the full report: [HDBSCAN Cluster min_cluster_size=20 min_samples=5](reports/clusters/mixed4e_1x1_pre_relu_conv/55/index.html). The full report is useful for verifying the results hold across more samples. This convention is followed in the full cluster reports as well. It also has more clusters, we have shown a subset here.  
+The visualisation is done by taking the first 2 rows for each cluster from the full report: [HDBSCAN Cluster min_cluster_size=20 min_samples=5](reports/clusters/mixed4e_1x1_pre_relu_conv/55/index.html). The full report is useful for verifying the results hold across more samples. This convention is followed in the full cluster reports as well. It also has more clusters, we have shown a subset here.
 :::
 
-The results are quite surprising. 
+The results are quite surprising.
 
 - We see the familiar categories `Cat`, `Fox`, and `Car` from the neuron's feature visualisation.
-- There is substantial disentanglement here. Almost all the clusters are clean, monosemantic concepts.  
+- There is substantial disentanglement here. Almost all the clusters are clean, monosemantic concepts.
   - The initial assumption was that extracted the full graph of every output activation tagged with a cluster label would be necessary for disentanglement; the labeling process alone has taken us surprisingly far.
 - We see many more cluster types: letters, human faces, and more. The neuron appears to be more polysemantic than initially suspected.
 - The number of total points in a cluster generally exceeds the number of unique images in that cluster for many cases, meaning the same label is found multiple times within a single image. This is analogous to a diagonal edge detector activating multiple times along a long diagonal.
@@ -392,12 +392,12 @@ The results are quite surprising.
 
 There is one notable concern:
 
-- The majority of points were marked as noise — specifically 239,060 points.   
+- The majority of points were marked as noise — specifically 239,060 points.
   - The raw pointwise multiplication vectors reveal very clean clusters, which makes the sheer volume of noise all the more concerning. Is this a coincidence? We address this in the next section.
 
 ::: {.callout-caution}
-Many times, we find clusters which were generated by a highly repeating pattern from just a single image (imagine something like a honeycomb).   
-Ideally, we would include them in the cluster reports, but the report generation can get very time consuming if you try to add these tiny clusters, hindering large scale clustering to analyse layers. In this article, all reports won't include clusters generated by patterns from only a single unique image.  
+Many times, we find clusters which were generated by a highly repeating pattern from just a single image (imagine something like a honeycomb).
+Ideally, we would include them in the cluster reports, but the report generation can get very time consuming if you try to add these tiny clusters, hindering large scale clustering to analyse layers. In this article, all reports won't include clusters generated by patterns from only a single unique image.
 :::
 
 
@@ -405,11 +405,11 @@ Ideally, we would include them in the cluster reports, but the report generation
 
 Our algorithm marks the majority of the dataset as noise, with cluster points being quite rare. This raises an important question: are these patterns genuinely meaningful, or did we simply find them because of the sheer size of the dataset?
 
-In this section, we use our pretrained model to categorize the patterns our neuron finds on images generated using feature visualisation. The cluster model categorizes many points to the `Fox` category (and sometimes `Cat`). Overlays of a subset of these points are shown below.    
+In this section, we use our pretrained model to categorize the patterns our neuron finds on images generated using feature visualisation. The cluster model categorizes many points to the `Fox` category (and sometimes `Cat`). Overlays of a subset of these points are shown below.
 
 ![](./images/snouts-found-patterns-feature-viz-canvas.jpeg)
 
-We observe that many of the snouts were correctly detected by our pretrained cluster model. This is a comforting result for us. We can be now confident that feature visualisation itself is generating these rare patterns for activating our neuron, at least for snouts.   
+We observe that many of the snouts were correctly detected by our pretrained cluster model. This is a comforting result for us. We can be now confident that feature visualisation itself is generating these rare patterns for activating our neuron, at least for snouts.
 
 If these patterns were purely coincidental and carry no meaningful role in the model's final output, it would imply that feature visualisation itself is misleading us. Together, these results give us sufficient confidence to move forward with this approach.
 
@@ -427,26 +427,26 @@ Since clustering misses points for any given cluster, we analyse the behavior of
 Looking at a single cluster across many examples, instead of a single example, gives us a much more complete picture of which previous-layer neurons it depends on.
 
 
-For a given random sample, we also use cosine similarity to find the closest cluster as a proxy. This can give varied results, since the similarity number is not very reliable. All reports that do this include the samples alongside their closest matches. Readers should inspect the matches by eye to judge whether it is a true match or just noise. In our experiments in this article, noisy matches are generally uncommon.   
+For a given random sample, we also use cosine similarity to find the closest cluster as a proxy. This can give varied results, since the similarity number is not very reliable. All reports that do this include the samples alongside their closest matches. Readers should inspect the matches by eye to judge whether it is a true match or just noise. In our experiments in this article, noisy matches are generally uncommon.
 
 :::
 
-We now move on to analyse why feature visualisation ends up giving us so many fox-like images.  
+We now move on to analyse why feature visualisation ends up giving us so many fox-like images.
 
 ## Why does feature visualisation like cats/foxes/cars?
 
-Below, we have the scatter plots of the output activations for every categorized point.  
+Below, we have the scatter plots of the output activations for every categorized point.
 
 ![Colored by cluster label. Colors are re-used, please check the legend. All plots share the same `y` scale. A deeper analysis on these activation ranges are done in [a later section](#activation-ranges).](./images/activation-graphs-mixed4e-pre-relu-conv-55/all.jpeg)
 
-We clearly see `Cat`, `Fox` and `Car` having higher activation values. `Car` however has a lower activation range than the other two, which might be the reason that we need to force a diversity term to make feature visualisation produce cars.  
+We clearly see `Cat`, `Fox` and `Car` having higher activation values. `Car` however has a lower activation range than the other two, which might be the reason that we need to force a diversity term to make feature visualisation produce cars.
 
 
 ::: {.fig-inline-right}
 ![It also weirdly shows an eagle like shape.](./images/feature-viz-max-neg.jpeg)
 :::
 
-Interestingly, human face has it's own negative band (around -200). On the right, we notice that there is a trace of a human face in feature visualisation too (teeth and eyes). There is also, weirdly, an eagle like entity.  
+Interestingly, human face has it's own negative band (around -200). On the right, we notice that there is a trace of a human face in feature visualisation too (teeth and eyes). There is also, weirdly, an eagle like entity.
 
 
 Given that we have identified distinct groups of patterns, can we force feature visualisation to reproduce them?
@@ -454,8 +454,8 @@ Given that we have identified distinct groups of patterns, can we force feature 
 We take the following approach:
 
 - To recap, the neuron in question is `mixed4e_1x1_pre_relu_conv:55`, with a kernel size of `1x1` and an output shape of `[14, 14]`. Its preceding layer, `mixed4d`, produces outputs of shape `[528, 14, 14]`.
-- Suppose our clustering model predicted `cat` at position `[4, 5]` in the neuron's output, with `act = input_activation[:, :, 4, 5]`. We want to force feature visualisation to recover this activation. Optionally, we can also ask feature visualisation to recover the pointwise multiplication `act * layer.weight[55, :, :, :]`.  
-  - This is simply done by minimising MSE with the given vector.  
+- Suppose our clustering model predicted `cat` at position `[4, 5]` in the neuron's output, with `act = input_activation[:, :, 4, 5]`. We want to force feature visualisation to recover this activation. Optionally, we can also ask feature visualisation to recover the pointwise multiplication `act * layer.weight[55, :, :, :]`.
+  - This is simply done by minimising MSE with the given vector.
 
 
 With this method, we end up getting very predictable results, shown below:
@@ -633,12 +633,12 @@ Some observations from the panel above:
 - **White dog stomachs:** A clean result, the cluster contains only white dogs with overlays on their stomachs, and the feature visualisation consistently produces white.
 - **Criss-crossing white rods:** Faint white shades dominate, though noise-colors also appear frequently.
 
-Using feature visualisation together with a point's assigned cluster is a useful way to understand what a cluster is actually capturing. This technique would be used in reports in the next section when it is not clear what feature a cluster overlay represents.  
+Using feature visualisation together with a point's assigned cluster is a useful way to understand what a cluster is actually capturing. This technique would be used in reports in the next section when it is not clear what feature a cluster overlay represents.
 
 
 # Analysing the connection with the previous layer
 
-What does it mean for a neuron to fire? We have evidence of neurons seeing patterns which do not result in a very high activation value from the neuron. Are these patterns meaningful? Before attempting to answer this question, we would first need to closely look at the range of output activation values for each cluster of a given neuron. These will be called activation ranges in the rest of the article.  
+What does it mean for a neuron to fire? We have evidence of neurons seeing patterns which do not result in a very high activation value from the neuron. Are these patterns meaningful? Before attempting to answer this question, we would first need to closely look at the range of output activation values for each cluster of a given neuron. These will be called activation ranges in the rest of the article.
 
 
 ## Activation ranges
@@ -697,7 +697,7 @@ The noise output of this neuron is not centered at 0; it's very negative. The bi
 
 This is a strong filter: it detects many patterns and drives almost all of them below 0. Since the next neuron won't be able to find a `human-face` signal using this neuron's output, this is evidence of the network actively leveraging ReLU to create sparse signals. The most obvious behavior of ReLU is providing sparsity by zeroing out a part of the noise range. But here we see something more deliberate: neurons actively driving entire clusters below 0, making the neuron act like a filter that excludes a specific concept from its output for a sparser, cleaner signal.
 
-An important hint here is that the neuron is using **both** the noise range and negative values for similar concepts. Is this by design? Does this mean that if a neuron outputs something in its noise range, it really is sending the signal "did not find a concept"?  
+An important hint here is that the neuron is using **both** the noise range and negative values for similar concepts. Is this by design? Does this mean that if a neuron outputs something in its noise range, it really is sending the signal "did not find a concept"?
 
 
 ## What makes this neuron say "cat"
@@ -710,10 +710,10 @@ We will now describe the process used to analyse how each neuron in the previous
 
 In this process, each example is one instance of a pointwise multiplication belonging to the cluster being analysed (`cat` in our case).
 
-- For each example, we keep the smallest set of largest-magnitude entries that account for 90% of its total absolute mass. These are the components actually doing the work for this particular firing; everything else is **assumed** as noise and dropped. 
+- For each example, we keep the smallest set of largest-magnitude entries that account for 90% of its total absolute mass. These are the components actually doing the work for this particular firing; everything else is **assumed** as noise and dropped.
 - We map each input point to the neuron in the previous convolutional layer (for example, `pw[493] = relu(mixed4d_pool_reduce_pre_relu_conv:29)`), and look at the activation ranges of `mixed4d_pool_reduce_pre_relu_conv:29` (relu is excluded).
 
-We repeat this across examples for all neurons that appear in the 90% sum set in any example. A card is used to provide data for each such neuron, as shown below.  
+We repeat this across examples for all neurons that appear in the 90% sum set in any example. A card is used to provide data for each such neuron, as shown below.
 
 ::: {.border .rounded .mb-2 .p-3}
 
@@ -791,7 +791,7 @@ We repeat this across examples for all neurons that appear in the 90% sum set in
 - After the scatter plot, there is a section for each matched cluster. The bar shows the relative number of times this neuron's activity was matched with that cluster. An expandable `show cluster photo` section reveals the input overlay of the cluster, the pointwise multiplications found in the examples (wild samples), and their closest matches, stacked in two rows with each column a wild/closest-match pair. Feature visualisation for the wild samples is shown occasionally, when it helps clarify what's being caught.
   - The line `cid=16 · 54 (55.1%) · median_sim=0.84` means: Cluster ID 16, number of closest matches = 54, which was 55.1% of the total matches, with a median cosine similarity of 0.84.
 - `Show outlier clusters` is another expandable section, containing expandable sub-sections for outlier clusters (closest-match rate below 10%). We don't generally look into these.
-- The neurons are sorted by their firing frequency in descending order.  
+- The neurons are sorted by their firing frequency in descending order.
 
 Each report starts with a section containing some top-level information:
 
@@ -800,8 +800,8 @@ Each report starts with a section containing some top-level information:
   - The left histogram in the first row plots the distance of each dependency neuron's output activation from the median of that neuron's noise range.
     - Different neurons have different noise ranges with different variances. We want to plot values that are comparable across neurons, so we use the noise radius, $max(noise) - median(noise)$, as the unit of distance.
     - For each output activation with value `o`, we calculate $\frac{o - median(noise)}{max(noise) - median(noise)}$ and plot it on the histogram.
-  - The right histogram plots the fraction of neurons with `(output_activation - median(noise)) > 0.8*noise_radius` for each input example.  
-  - The histograms in the second row do the same plots for only positive activations. The ones in the last row do it for negative activations.  
+  - The right histogram plots the fraction of neurons with `(output_activation - median(noise)) > 0.8*noise_radius` for each input example.
+  - The histograms in the second row do the same plots for only positive activations. The ones in the last row do it for negative activations.
 
 ::: {#fig-act-noise-distance-histograms layout-ncol=2}
 
@@ -862,13 +862,13 @@ There is another cluster of `human faces` (Cluster 32) for this neuron, whose ra
 
 Putting this together, for `mixed4e_1x1_pre_relu_conv:55` we can conclude that it heavily gets its signals from "activated" neurons, i.e., neurons emitting a value far from the noise range. These inputs also match with the clusters that have top activations for that neuron, which in turn gives us a way of finding these ranges directly (or perhaps a simpler heuristic suffices: points `0.8 noise radius away from the noise median`). We observe the same pattern consistently across other neurons we randomly sampled from this layer, not just this one (see [Appendix: Neuron Reports](#neuron-reports)).
 
-The simpler statement, that "maximum" is a sign of activation, is starting to hold up again. The other clusters are evidence of the neuron actively inhibiting signals from other concepts. When `mixed4e_1x1_pre_relu_conv:55` has a high output activation, it can be coded as a proposition `(cat OR snout OR car) AND ~(human_face OR letter OR mountain OR white_dog_stomach ...).   
+The simpler statement, that "maximum" is a sign of activation, is starting to hold up again. The other clusters are evidence of the neuron actively inhibiting signals from other concepts. When `mixed4e_1x1_pre_relu_conv:55` has a high output activation, it can be coded as a proposition `(cat OR snout OR car) AND ~(human_face OR letter OR mountain OR white_dog_stomach ...).
 
 A surprising result for us was the really large number of neurons activating for every pattern with similar concepts. Since so many neurons are used to identify the signal, the network seems to rely on something like a law-of-large-numbers effect: even if some signals are "fake," or some neurons are accidentally inhibited, the overall majority makes up for it. This fits well with what a convolutional kernel actually does: a Hadamard product followed by a sum. Addition acts like a soft OR gate — evidence from many neurons simply accumulates, so no single input needs to be reliable on its own for the aggregate signal to be trustworthy.
 
 This is worth thinking about. Imagine you are a neuron: you fire when the previous layer's neurons feeding into you land in a specific set of ranges together, because that's literally the arithmetic you're doing, a weighted sum. Nothing about "direction" enters into that picture on its own.
 
-Cosine similarity is the metric we (and much of the field, us included, see [Algorithm](#algorithm)) reach for instead, and it gets us far, but it's an indirect way to think about why this works. For our clustering problem, using L2 normalization before clustering allowed the data to fit into a tighter ball, you need lesser data to actually fill up the whole activation range space for HDBSCAN's single linkage to count that space as dense. Given enough examples that fill up the whole range across all neurons, we speculate that L2 normalisation would not be needed.  
+Cosine similarity is the metric we (and much of the field, us included, see [Algorithm](#algorithm)) reach for instead, and it gets us far, but it's an indirect way to think about why this works. For our clustering problem, using L2 normalization before clustering allowed the data to fit into a tighter ball, you need lesser data to actually fill up the whole activation range space for HDBSCAN's single linkage to count that space as dense. Given enough examples that fill up the whole range across all neurons, we speculate that L2 normalisation would not be needed.
 
 
 # Further Work
@@ -878,7 +878,7 @@ Cosine similarity is the metric we (and much of the field, us included, see [Alg
   - For neurons with 3x3 or 5x5 convolutions, we have cluster reports from the layers `mixed4d_3x3_pre_relu_conv` and `mixed4d_5x5_pre_relu_conv`. These cluster reports seem reasonable to a large extent; some are provided in the appendix.
 - The activation-range analysis depends on a single dependency neuron holding the same sign across all examples, which is not generally true for convolutions with kernel size greater than 1. A thorough dependency analysis of one of these neurons would be very useful.
 - We would also like a procedure that doesn't miss a large number of points (clustering is very aggressive in assigning points to noise). Simply using the heuristic `activation > 0.8 * noise radius` might work, but this hasn't been validated for any layer other than `mixed4e_1x1_pre_relu_conv:55`.
-- Finally, we hope this technique proves more useful for circuit analysis, as it holds promise for disentangling polysemantic neurons for a given example. Instead of a static analysis which tags the neuron with some behavior, we believe that tagging at runtime can produce disentangled subgraphs in the network which can be studied as representations of what the network "thinks" for a given input.  
+- Finally, we hope this technique proves more useful for circuit analysis, as it holds promise for disentangling polysemantic neurons for a given example. Instead of a static analysis which tags the neuron with some behavior, we believe that tagging at runtime can produce disentangled subgraphs in the network which can be studied as representations of what the network "thinks" for a given input.
 
 # Appendix
 
@@ -894,13 +894,13 @@ We use Integrated Gradients in the first phase to identify high-attribution poin
 ![Tabby Cat](./images/thresholding/threshold-analysis-tabby.jpeg){width="100%"}
 
 
-Plots of attributions aggregated in different categories. The red line is the collected threshold.   
-Negative Threshold plots use absolute values, and hence have positive values in `y` axis.  
-The elbow was found by finding the point farthest from the line connecting the minimum value point to the maximum value point. 
+Plots of attributions aggregated in different categories. The red line is the collected threshold.
+Negative Threshold plots use absolute values, and hence have positive values in `y` axis.
+The elbow was found by finding the point farthest from the line connecting the minimum value point to the maximum value point.
 :::
 
 ::: {.aside}
-Attribution scores are known to follow highly skewed distributions — a small number of points carry disproportionately high attribution relative to the vast majority. 
+Attribution scores are known to follow highly skewed distributions — a small number of points carry disproportionately high attribution relative to the vast majority.
 :::
 
 The simplest approach is to apply a global attribution threshold, determined by locating the elbow of the attribution distribution across all ImageNet target classes. We aggregate layer attributions for every example in our dataset (with respect to its target class) and identify the threshold at this elbow. The question is whether a single global threshold captures every pattern a neuron encounters. In our dataset, the answer is no.
@@ -934,13 +934,13 @@ Inputs.table(label_by_threshold, {
       - [Cluster 59 (cars)](./reports/dependency-reports/mixed4e_1x1_pre_relu_conv/55/59/report.qmd)
       - [Cluster 60 (foxes)](./reports/dependency-reports/mixed4e_1x1_pre_relu_conv/55/60/report.qmd)
       - [Cluster 61 (cats)](./reports/dependency-reports/mixed4e_1x1_pre_relu_conv/55/61/report.qmd)
-  - `77` [Cluster Report](./reports/clusters/mixed4e_1x1_pre_relu_conv/77/index.html) 
+  - `77` [Cluster Report](./reports/clusters/mixed4e_1x1_pre_relu_conv/77/index.html)
     - [Dependency Report, cluster 22 (leopard)](./reports/dependency-reports/mixed4e_1x1_pre_relu_conv/77/22/report.qmd)
       - The first neuron is concerning. Clusters do look like they are finding some repeated pattern, it is not clear what they are though. Feature visualisations are also given for this neuron.
       - Many of the neurons are finding some patchy repeating patterns (patterns on snakes, birds, leopards). We also have a white fur match. We do see a lot of leopard patches too.
   - `25` [Cluster Report](./reports/clusters/mixed4e_1x1_pre_relu_conv/25/index.html)
     - [Dependency Report, cluster 15 (car wheels)](./reports/dependency-reports/mixed4e_1x1_pre_relu_conv/25/15/report.qmd)
-      - A diverse class of circular features like `camera lens`, `bead-like` structures, `eyes`, `snout` and a lot of `wheels` are observed.  
+      - A diverse class of circular features like `camera lens`, `bead-like` structures, `eyes`, `snout` and a lot of `wheels` are observed.
 
 
 - `mixed4d_3x3_pre_relu_conv`
@@ -955,6 +955,13 @@ Inputs.table(label_by_threshold, {
   - `0` [Cluster Report](./reports/clusters/mixed4d_5x5_pre_relu_conv/0/index.html)
   - `10` [Cluster Report](./reports/clusters/mixed4d_5x5_pre_relu_conv/10/index.html)
   - `27` [Cluster Report](./reports/clusters/mixed4d_5x5_pre_relu_conv/27/index.html)
+
+
+---
+
+Code at: https://github.com/narang99/hiccup-ide/tree/main/olt
+
+It's not well structured, if you are interested in this, please contact me
 
 
 ---
