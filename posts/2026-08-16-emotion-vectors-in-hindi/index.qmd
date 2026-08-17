@@ -5,6 +5,7 @@ description: Extracting vectors describing emotions in an LLM and testing their 
 categories: [AI, Interpretability]
 date: 'August 17, 2026'
 bibliography: ["./sofroniew2026twheemotion.bib"]
+resources: ["./emotion-reports/**"]
 ---
 
 Recent research [@sofroniew2026twheemotion] has found ways to extract approximate mathematical descriptions of emotional states inside a large language model.  
@@ -13,62 +14,113 @@ In this article, I'm going to reproduce the first part of their experiment (the 
 
 Do the concepts extracted from a language like English cleanly transfer to another language like Hindi? If yes, which concepts do? Does the abstract "feeling" of emotion carries over? Or does it just carry over as a detector for specific words like "happy" or "kind" (the obvious markers of emotional activity) in their translated form?
 
-<div class="emotion-trailer" id="et-happy"></div>
+<p class="et-caption">Excerpts showing a few different ways these vectors light up: sometimes on a single trigger word like "happy," sometimes across a whole phrase that has no trigger word at all.</p>
 
-<div class="emotion-trailer" id="et-desperate"></div>
+::: {.aside}
+Brighter blue means higher activation. Hindi text can look choppy here because Gemma's tokenizer often splits common words into several pieces.
+:::
 
-<div class="emotion-trailer" id="et-kind"></div>
+<div class="emotion-trailer" id="emotion-trailer"></div>
 
 <!--
-Reusable "emotion trailer" component: one shared style block + one shared
-render helper (below), each emotion just needs an empty <div class="emotion-trailer"
-id="et-...">, plus one renderEmotionTrailer(...) call at the bottom of the
-script block. No per-emotion CSS/import/markup duplication.
+Reusable "emotion trailer" component: one shared outer container (above), one
+shared style block + one shared render helper (below). Each new emotion is
+just one more renderEmotionTrailer("Label", {en...}, {hi...}) call at the
+bottom of the script block -- it appends its own row into the single
+container instead of needing its own div/CSS/import.
 -->
 
 <style>
-.emotion-trailer { margin: 28px 0; }
+.et-caption {
+  font-size: 0.85rem;
+  color: #999;
+  margin: 20px 0 6px;
+}
+body.quarto-dark .et-caption {
+  color: #888;
+}
+.emotion-trailer {
+  margin: 24px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fafafa;
+  overflow: hidden;
+}
+.emotion-trailer .et-section {
+  padding: 10px 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+.emotion-trailer .et-section:last-child {
+  border-bottom: none;
+}
 .emotion-trailer .et-emotion-label {
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #888;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 .emotion-trailer .et-row {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   flex-wrap: wrap;
 }
 .emotion-trailer .et-card {
-  flex: 1 1 260px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 14px 16px;
-  background: #fafafa;
+  flex: 1 1 240px;
+  min-width: 0;
+}
+.emotion-trailer .et-card + .et-card {
+  border-left: 1px solid #e5e5e5;
+  padding-left: 20px;
+}
+.emotion-trailer .et-card-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.emotion-trailer .et-card-full {
+  flex: 1 1 100%;
+  width: 100%;
+}
+.emotion-trailer .et-subcard + .et-subcard {
+  padding-top: 10px;
+  border-top: 1px solid #e5e5e5;
 }
 .emotion-trailer .et-tag {
-  font-size: 0.72rem;
+  font-size: 0.65rem;
   font-weight: 600;
   color: #999;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-bottom: 8px;
+  margin-bottom: 3px;
 }
 .emotion-trailer .et-gloss {
-  margin-top: 8px;
-  font-size: 0.85rem;
+  margin-top: 3px;
+  font-size: 0.76rem;
   font-style: italic;
   color: #777;
 }
-.emotion-trailer .colored-tokens {
-  line-height: 1.9;
-  font-size: 0.95rem;
+.emotion-trailer .et-gloss-row {
+  margin-top: 8px;
+  text-align: center;
 }
-body.quarto-dark .emotion-trailer .et-card {
+.emotion-trailer .colored-tokens {
+  line-height: 1.55;
+  font-size: 0.86rem;
+}
+body.quarto-dark .emotion-trailer {
   border-color: #444;
-  background: #232323;
+  background: #202020;
+}
+body.quarto-dark .emotion-trailer .et-section {
+  border-bottom-color: #383838;
+}
+body.quarto-dark .emotion-trailer .et-card + .et-card {
+  border-left-color: #383838;
+}
+body.quarto-dark .emotion-trailer .et-subcard + .et-subcard {
+  border-top-color: #383838;
 }
 body.quarto-dark .emotion-trailer .et-tag,
 body.quarto-dark .emotion-trailer .et-emotion-label,
@@ -85,45 +137,134 @@ body.quarto-dark .emotion-trailer span[style*="background-color: rgb(255, 255, 2
 <script crossorigin type="module">
 import { render, ColoredTokens } from "https://unpkg.com/circuitsvis@1.43.3/dist/cdn/esm.js";
 
-// Shared helper: builds the English/Hindi card pair inside `containerId`
-// and renders both circuitsvis token visualizations into it.
-//   en / hi = { tokens: string[], values: number[], gloss?: string }
-//   opts    = { minValue?: number, maxValue?: number }  -- same scale is
-//             used for both sides so relative activation strength stays honest.
-function renderEmotionTrailer(containerId, label, en, hi, opts = {}) {
+// Shared helper: appends one two-card diff row (as a `.et-section`) into any
+// container with class "emotion-trailer", and renders both circuitsvis token
+// visualizations into it. Used both for the English/Hindi trailer above and
+// for the same-language, different-vector diffs further down the article.
+//   left / right = { tag: string, tokens: string[], values: number[], gloss?: string }
+//   opts         = { minValue?: number, maxValue?: number, gloss?: string }
+//     minValue/maxValue: same scale is used for both sides so relative
+//       activation strength stays honest.
+//     gloss: if set, rendered once, centered below the whole row (for a
+//       same-text diff, where a single translation covers both sides)
+//       instead of once per card.
+const rowCounters = {};
+function renderTokenDiffRow(containerId, label, left, right, opts = {}) {
   const minValue = opts.minValue ?? 0;
   const maxValue = opts.maxValue ?? 100;
   const container = document.getElementById(containerId);
-  const enVisId = containerId + "-en";
-  const hiVisId = containerId + "-hi";
+  rowCounters[containerId] = (rowCounters[containerId] ?? 0) + 1;
+  const rowId = containerId + "-row-" + rowCounters[containerId];
+  const leftVisId = rowId + "-a";
+  const rightVisId = rowId + "-b";
 
-  container.innerHTML = `
+  const section = document.createElement("div");
+  section.className = "et-section";
+  section.innerHTML = `
     <div class="et-emotion-label">${label}</div>
     <div class="et-row">
       <div class="et-card">
-        <div class="et-tag">English</div>
-        <div id="${enVisId}"></div>
-        ${en.gloss ? `<div class="et-gloss">${en.gloss}</div>` : ""}
+        <div class="et-tag">${left.tag}</div>
+        <div id="${leftVisId}"></div>
+        ${!opts.gloss && left.gloss ? `<div class="et-gloss">${left.gloss}</div>` : ""}
       </div>
       <div class="et-card">
-        <div class="et-tag">Hindi</div>
-        <div id="${hiVisId}"></div>
-        ${hi.gloss ? `<div class="et-gloss">${hi.gloss}</div>` : ""}
+        <div class="et-tag">${right.tag}</div>
+        <div id="${rightVisId}"></div>
+        ${!opts.gloss && right.gloss ? `<div class="et-gloss">${right.gloss}</div>` : ""}
       </div>
     </div>
+    ${opts.gloss ? `<div class="et-gloss et-gloss-row">${opts.gloss}</div>` : ""}
   `;
+  container.appendChild(section);
 
   // SentencePiece marks a leading space with "▁" (U+2581); circuitsvis doesn't
   // convert this itself, so it'd otherwise render as a literal underscore-like
   // mark between tokens. Swap it for a real space before displaying.
   const deSentencePiece = (tokens) => tokens.map((t) => t.replace(/▁/g, " "));
 
-  render(enVisId, ColoredTokens, { tokens: deSentencePiece(en.tokens), values: en.values, minValue, maxValue });
-  render(hiVisId, ColoredTokens, { tokens: deSentencePiece(hi.tokens), values: hi.values, minValue, maxValue });
+  render(leftVisId, ColoredTokens, { tokens: deSentencePiece(left.tokens), values: left.values, minValue, maxValue });
+  render(rightVisId, ColoredTokens, { tokens: deSentencePiece(right.tokens), values: right.values, minValue, maxValue });
+}
+
+function renderEmotionTrailer(label, en, hi, opts = {}) {
+  renderTokenDiffRow("emotion-trailer", label, { tag: "English", ...en }, { tag: "Hindi", ...hi }, opts);
+}
+
+// A single full story as its own row (one card, full width), rather than a
+// diff between two things. Used to just show a story as-is.
+//   story = { tag: string, tokens: string[], values: number[], gloss?: string }
+function renderSingleStoryRow(containerId, label, story, opts = {}) {
+  const minValue = opts.minValue ?? 0;
+  const maxValue = opts.maxValue ?? 100;
+  const container = document.getElementById(containerId);
+  rowCounters[containerId] = (rowCounters[containerId] ?? 0) + 1;
+  const rowId = containerId + "-row-" + rowCounters[containerId];
+  const visId = rowId + "-a";
+
+  const section = document.createElement("div");
+  section.className = "et-section";
+  section.innerHTML = `
+    <div class="et-emotion-label">${label}</div>
+    <div class="et-card et-card-full">
+      <div class="et-tag">${story.tag}</div>
+      <div id="${visId}"></div>
+      ${story.gloss ? `<div class="et-gloss">${story.gloss}</div>` : ""}
+    </div>
+  `;
+  container.appendChild(section);
+
+  const deSentencePiece = (tokens) => tokens.map((t) => t.replace(/▁/g, " "));
+  render(visId, ColoredTokens, { tokens: deSentencePiece(story.tokens), values: story.values, minValue, maxValue });
+}
+
+// Same idea as renderTokenDiffRow, but for a diff across more than two
+// vectors on identical text: whichever vector peaks for this phrase gets its
+// own card on the left, and the rest are stacked together in a single card
+// on the right for comparison.
+//   peak   = { tag: string, tokens: string[], values: number[] }
+//   others = [{ tag: string, tokens: string[], values: number[] }, ...]
+function renderVectorPeakRow(containerId, label, peak, others, opts = {}) {
+  const minValue = opts.minValue ?? 0;
+  const maxValue = opts.maxValue ?? 100;
+  const container = document.getElementById(containerId);
+  rowCounters[containerId] = (rowCounters[containerId] ?? 0) + 1;
+  const rowId = containerId + "-row-" + rowCounters[containerId];
+  const peakVisId = rowId + "-peak";
+
+  const deSentencePiece = (tokens) => tokens.map((t) => t.replace(/▁/g, " "));
+
+  const othersHtml = others.map((side, i) => `
+    <div class="et-subcard">
+      <div class="et-tag">${side.tag}</div>
+      <div id="${rowId}-other${i}"></div>
+    </div>
+  `).join("");
+
+  const section = document.createElement("div");
+  section.className = "et-section";
+  section.innerHTML = `
+    <div class="et-emotion-label">${label}</div>
+    <div class="et-row">
+      <div class="et-card">
+        <div class="et-tag">${peak.tag}</div>
+        <div id="${peakVisId}"></div>
+      </div>
+      <div class="et-card et-card-stack">
+        ${othersHtml}
+      </div>
+    </div>
+    ${opts.gloss ? `<div class="et-gloss et-gloss-row">${opts.gloss}</div>` : ""}
+  `;
+  container.appendChild(section);
+
+  render(peakVisId, ColoredTokens, { tokens: deSentencePiece(peak.tokens), values: peak.values, minValue, maxValue });
+  others.forEach((side, i) => {
+    render(rowId + "-other" + i, ColoredTokens, { tokens: deSentencePiece(side.tokens), values: side.values, minValue, maxValue });
+  });
 }
 
 renderEmotionTrailer(
-  "et-happy",
   "Happy",
   {
     tokens: ["a", "▁sheep", "▁named", "▁Bob", "▁was", "▁very", "▁happy", "."],
@@ -137,7 +278,6 @@ renderEmotionTrailer(
 );
 
 renderEmotionTrailer(
-  "et-desperate",
   "Desperate",
   {
     tokens: ["He", "▁could", "▁not", "▁move", "▁or", "▁talk", "."],
@@ -152,7 +292,6 @@ renderEmotionTrailer(
 );
 
 renderEmotionTrailer(
-  "et-kind",
   "Kind",
   {
     tokens: ["Her", "▁mom", "▁was", "▁so", "▁happy", "▁to", "▁see", "▁the", "▁pretty", "▁candle", "."],
@@ -166,7 +305,420 @@ renderEmotionTrailer(
   }
 );
 
-// To add another emotion's trailer:
-//   1. Drop a `<div class="emotion-trailer" id="et-<name>"></div>` wherever it belongs in the text.
-//   2. Add one more renderEmotionTrailer("et-<name>", "<Label>", {en...}, {hi...}) call here.
+// To add another emotion's trailer: just add one more
+// renderEmotionTrailer("<Label>", {en...}, {hi...}) call here -- it appends
+// its own row into the single #emotion-trailer container above.
+
+// Angry/Sad/Desperate diff on a single Hindi story (the rocking-chair
+// story), same text colored under three different vectors. The vector that
+// peaks for a given phrase gets its own card on the left; the other two are
+// stacked on the right for comparison.
+renderVectorPeakRow(
+  "bad-valence-diff",
+  "The outburst",
+  {
+    tag: "Angry",
+    tokens: ["▁वह", "▁च", "िल्", "ला", "या", "▁और", "▁द", "ीव", "ार", "▁पर", "▁मु", "क्", "का", "▁म", "ारा"],
+    values: [62.47, 49.91, 52.00, 57.19, 70.00, 79.00, 64.44, 31.84, 73.44, 103.38, 72.38, 32.75, 41.34, 40.41, 81.69]
+  },
+  [
+    {
+      tag: "Sad",
+      tokens: ["▁वह", "▁च", "िल्", "ला", "या", "▁और", "▁द", "ीव", "ार", "▁पर", "▁मु", "क्", "का", "▁म", "ारा"],
+      values: [0.00, 10.04, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
+    },
+    {
+      tag: "Desperate",
+      tokens: ["▁वह", "▁च", "िल्", "ला", "या", "▁और", "▁द", "ीव", "ार", "▁पर", "▁मु", "क्", "का", "▁म", "ारा"],
+      values: [50.44, 40.06, 38.16, 36.00, 32.44, 50.56, 44.72, 26.91, 50.19, 57.41, 40.88, 20.94, 0.00, 0.00, 32.66]
+    }
+  ],
+  { maxValue: 105, gloss: "&ldquo;he screamed and punched the wall&rdquo;" }
+);
+
+renderVectorPeakRow(
+  "bad-valence-diff",
+  "The aftermath",
+  {
+    tag: "Sad",
+    tokens: ["▁अपना", "▁स", "िर", "▁ल", "ट", "का", "▁दिया", "▁और", "▁च", "ले", "▁गए"],
+    values: [27.98, 17.05, 40.66, 34.41, 18.17, 29.33, 42.69, 64.19, 51.12, 22.45, 32.88]
+  },
+  [
+    {
+      tag: "Angry",
+      tokens: ["▁अपना", "▁स", "िर", "▁ल", "ट", "का", "▁दिया", "▁और", "▁च", "ले", "▁गए"],
+      values: [23.38, 21.83, 21.09, 17.80, 12.84, 0.00, 0.00, 21.88, 26.25, 18.09, 14.11]
+    },
+    {
+      tag: "Desperate",
+      tokens: ["▁अपना", "▁स", "िर", "▁ल", "ट", "का", "▁दिया", "▁और", "▁च", "ले", "▁गए"],
+      values: [39.50, 34.62, 52.25, 44.47, 0.00, 0.00, 27.56, 60.94, 53.84, 29.12, 30.84]
+    }
+  ],
+  { maxValue: 105, gloss: "&ldquo;he hung his head and walked away&rdquo;" }
+);
+
+renderVectorPeakRow(
+  "bad-valence-diff",
+  "The realization",
+  {
+    tag: "Desperate",
+    tokens: ["▁उसने", "▁कुछ", "▁ऐसा", "▁किया", "▁था", "▁जि", "से", "▁वह", "▁पूर्व", "व", "त", "▁नहीं", "▁कर", "▁सकता", "▁था", "।"],
+    values: [69.88, 59.00, 58.94, 29.05, 35.34, 0.00, 32.25, 35.88, 0.00, 0.00, 31.02, 21.64, 25.19, 21.61, 25.11, 45.69]
+  },
+  [
+    {
+      tag: "Angry",
+      tokens: ["▁उसने", "▁कुछ", "▁ऐसा", "▁किया", "▁था", "▁जि", "से", "▁वह", "▁पूर्व", "व", "त", "▁नहीं", "▁कर", "▁सकता", "▁था", "।"],
+      values: [40.31, 29.44, 30.36, 14.73, 24.39, 0.00, 15.25, 20.55, 0.00, 0.00, 16.59, 14.67, 11.47, 0.00, 15.37, 18.53]
+    },
+    {
+      tag: "Sad",
+      tokens: ["▁उसने", "▁कुछ", "▁ऐसा", "▁किया", "▁था", "▁जि", "से", "▁वह", "▁पूर्व", "व", "त", "▁नहीं", "▁कर", "▁सकता", "▁था", "।"],
+      values: [23.44, 10.95, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 11.29, 0.00, 0.00, 0.00, 12.49, 20.16]
+    }
+  ],
+  { maxValue: 105, gloss: "&ldquo;he had done something he couldn&rsquo;t undo&rdquo;" }
+);
+
+// Angry vs Desperate on a single full English story (the goat left outside
+// on a hot day), shown as-is rather than as excerpts, to make the point that
+// desperate lights up more broadly and more strongly than angry across the
+// same story rather than just at a different peak.
+renderTokenDiffRow(
+  "bad-valence-diff-en",
+  "Angry vs Desperate, same story",
+  {
+    tag: "Angry",
+    tokens: ["Once", "▁upon", "▁a", "▁time", ",", "▁there", "▁was", "▁a", "▁goat", ".", "▁The", "▁goat", "▁was", "▁outside", "▁and", "▁it", "▁was", "▁very", "▁hot", ".", "▁The", "▁goat", "▁was", "▁thirsty", "▁and", "▁wanted", "▁to", "▁go", "▁inside", ".", "▁But", "▁the", "▁door", "▁was", "▁shut", ".", "▁The", "▁goat", "▁was", "▁sad", "▁and", "▁miserable", ".", "▁", "\n\n", "The", "▁goat", "▁looked", "▁for", "▁another", "▁way", "▁inside", "▁but", "▁there", "▁was", "▁none", ".", "▁The", "▁sun", "▁was", "▁getting", "▁hotter", "▁and", "▁the", "▁goat", "▁was", "▁getting", "▁thi", "rs", "tier", ".", "▁The", "▁goat", "▁tried", "▁to", "▁push", "▁the", "▁door", "▁open", "▁but", "▁it", "▁was", "▁too", "▁heavy", ".", "▁", "\n\n", "The", "▁goat", "▁was", "▁so", "▁thirsty", "▁and", "▁miserable", "▁that", "▁it", "▁fell", "▁down", "▁and", "▁could", "▁not", "▁get", "▁up", ".", "▁The", "▁goat", "▁did", "▁not", "▁survive", "▁the", "▁hot", "▁day", ".", "▁The", "▁end", "."],
+    values: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 3.06, 0.00, 0.00, 5.09, 2.86, 0.00, 5.16, 16.02, 20.03, 24.91, 5.48, 6.26, 6.42, 10.44, 0.00, 6.51, 9.03, 0.00, 3.06, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 7.08, 0.00, 0.00, 0.00, 18.70, 12.68, 5.10, 10.45, 7.58, 0.00, 10.22, 7.23, 11.38, 10.53, 7.18, 7.54, 0.00, 0.00, 0.00, 7.45, 16.02, 14.56, 9.50, 17.39, 13.37, 20.09, 29.70, 22.61, 10.52, 6.23, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 8.07, 9.39, 6.21, 0.00, 0.00, 12.79, 5.57, 13.20, 9.32, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 7.07, 5.00, 0.00, 0.00, 0.00, 0.00, 0.00]
+  },
+  {
+    tag: "Desperate",
+    tokens: ["Once", "▁upon", "▁a", "▁time", ",", "▁there", "▁was", "▁a", "▁goat", ".", "▁The", "▁goat", "▁was", "▁outside", "▁and", "▁it", "▁was", "▁very", "▁hot", ".", "▁The", "▁goat", "▁was", "▁thirsty", "▁and", "▁wanted", "▁to", "▁go", "▁inside", ".", "▁But", "▁the", "▁door", "▁was", "▁shut", ".", "▁The", "▁goat", "▁was", "▁sad", "▁and", "▁miserable", ".", "▁", "\n\n", "The", "▁goat", "▁looked", "▁for", "▁another", "▁way", "▁inside", "▁but", "▁there", "▁was", "▁none", ".", "▁The", "▁sun", "▁was", "▁getting", "▁hotter", "▁and", "▁the", "▁goat", "▁was", "▁getting", "▁thi", "rs", "tier", ".", "▁The", "▁goat", "▁tried", "▁to", "▁push", "▁the", "▁door", "▁open", "▁but", "▁it", "▁was", "▁too", "▁heavy", ".", "▁", "\n\n", "The", "▁goat", "▁was", "▁so", "▁thirsty", "▁and", "▁miserable", "▁that", "▁it", "▁fell", "▁down", "▁and", "▁could", "▁not", "▁get", "▁up", ".", "▁The", "▁goat", "▁did", "▁not", "▁survive", "▁the", "▁hot", "▁day", ".", "▁The", "▁end", "."],
+    values: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 31.69, 27.11, 22.52, 40.84, 23.69, 16.55, 22.48, 21.64, 32.75, 31.38, 0.00, 34.78, 29.55, 0.00, 32.94, 0.00, 45.16, 39.47, 0.00, 47.41, 17.53, 21.91, 0.00, 0.00, 0.00, 35.88, 20.56, 34.41, 16.16, 19.80, 0.00, 43.62, 31.66, 38.53, 0.00, 38.34, 20.52, 29.61, 23.70, 19.08, 19.31, 44.81, 37.78, 68.69, 60.34, 59.81, 33.41, 26.14, 40.88, 45.69, 36.56, 63.28, 50.19, 51.34, 26.66, 0.00, 35.06, 42.12, 43.78, 46.69, 40.22, 23.08, 16.59, 49.50, 0.00, 0.00, 0.00, 49.56, 55.31, 39.59, 50.50, 55.88, 35.28, 51.78, 65.31, 48.66, 38.12, 44.94, 48.12, 43.19, 33.88, 29.89, 38.88, 16.44, 57.03, 40.44, 39.19, 0.00, 28.12, 25.91, 20.09, 0.00, 0.00, 0.00, 0.00]
+  },
+  { maxValue: 70 }
+);
+
+// Two full stories, shown as-is (not diffed against each other): the
+// "smelly whale" story in English, and the closest thematic match we found
+// in Hindi, "Sally's smelly tooth" -- both are genuinely disgust-specific
+// (not shared with the angry report in either language), and both follow
+// the same arc: smell problem -> others react badly -> character cleans up
+// -> problem resolves.
+renderSingleStoryRow(
+  "disgust-stories",
+  "English: the smelly whale",
+  {
+    tag: "Disgusted",
+    tokens: ["Once", "▁upon", "▁a", "▁time", ",", "▁there", "▁was", "▁a", "▁big", "▁whale", ".", "▁The", "▁whale", "▁lived", "▁in", "▁the", "▁deep", "▁blue", "▁sea", ".", "▁He", "▁had", "▁many", "▁friends", ",", "▁like", "▁fish", "▁and", "▁crabs", ".", "▁But", "▁he", "▁had", "▁a", "▁problem", ".", "▁He", "▁was", "▁very", "▁smelly", ".", "▁His", "▁friends", "▁did", "▁not", "▁like", "▁the", "▁smell", ".", "\n\n", "One", "▁day", ",", "▁the", "▁whale", "▁thought", ",", "▁\"", "I", "▁need", "▁to", "▁find", "▁a", "▁way", "▁to", "▁not", "▁be", "▁smelly", ".\"", "▁So", ",", "▁he", "▁swam", "▁and", "▁swam", "▁until", "▁he", "▁found", "▁a", "▁big", "▁rock", ".", "▁The", "▁rock", "▁was", "▁covered", "▁in", "▁green", "▁plants", ".", "▁The", "▁whale", "▁rubbed", "▁against", "▁the", "▁rock", "▁to", "▁clean", "▁himself", ".", "▁The", "▁green", "▁plants", "▁took", "▁away", "▁the", "▁smell", ".", "\n\n", "The", "▁whale", "▁swam", "▁back", "▁to", "▁his", "▁friends", ".", "▁They", "▁were", "▁all", "▁happy", "▁that", "▁he", "▁was", "▁not", "▁smelly", "▁anymore", ".", "▁They", "▁played", "▁together", "▁in", "▁the", "▁sea", ".", "▁The", "▁whale", "▁learned", "▁that", "▁it", "▁is", "▁important", "▁to", "▁be", "▁clean", ".", "▁And", "▁all", "▁the", "▁sea", "▁friends", "▁lived", "▁happily", "▁ever", "▁after", "."],
+    values: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 49.31, 44.41, 36.50, 47.00, 20.41, 1.30, 34.03, 47.50, 44.31, 0.00, 0.00, 0.00, 0.00, 17.97, 0.00, 0.00, 0.00, 0.00, 8.02, 6.85, 9.22, 10.23, 7.52, -2.24, 1.93, 4.09, 26.92, 29.03, 36.91, 0.00, 0.00, 14.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, -2.55, 0.00, 0.00, 0.00, 0.00, 11.41, 0.00, 1.98, 0.00, 9.59, 20.58, 9.20, 0.00, 13.30, 1.04, -2.95, 0.08, 2.18, 26.62, 11.84, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 18.30, 15.62, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.40, 1.75, 6.92, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
+  },
+  { maxValue: 50 }
+);
+
+renderSingleStoryRow(
+  "disgust-stories",
+  "Hindi: Sally's smelly tooth",
+  {
+    tag: "Disgusted",
+    tokens: ["एक", "▁बार", ",", "▁स", "ै", "ली", "▁नाम", "क", "▁एक", "▁छोट", "ी", "▁लड़", "की", "▁थी", "▁जि", "से", "▁समस्या", "▁थी", "।", "▁उस", "का", "▁एक", "▁द", "ांत", "▁बहुत", "▁बद", "ब", "ू", "दार", "▁था", "।", "▁जब", "▁भी", "▁वह", "▁ब", "ोल", "ती", "▁थी", ",", "▁लोग", "▁अपनी", "▁ना", "क", "▁को", "▁क", "वर", "▁करते", "▁थे", "▁और", "▁पी", "छे", "▁ह", "ट", "▁जाते", "▁थे", "।", "\"", "यह", "▁दा", "ँ", "त", "▁इत", "ना", "▁बद", "ब", "ू", "दार", "▁क्यों", "▁है", "?\"", "▁स", "ै", "ली", "▁ने", "▁खुद", "▁को", "▁सो", "चा", "।", "▁वह", "▁इसका", "▁पता", "▁नहीं", "▁लगा", "▁सकती", "▁थी", ",", "▁इसलिए", "▁उसने", "▁अपनी", "▁म", "म्", "मी", "▁से", "▁पू", "छ", "ने", "▁का", "▁फै", "स", "ला", "▁किया", "।", "\"", "म", "म", ",", "▁मे", "रा", "▁द", "ांत", "▁इत", "ना", "▁बद", "ब", "ू", "दार", "▁क्यों", "▁है", "?\"", "▁स", "ै", "ली", "▁ने", "▁कहा", "।", "उ", "स", "की", "▁म", "म्", "मी", "▁ने", "▁समझ", "ा", "या", "▁कि", "▁यह", "▁इसलिए", "▁था", "▁क्योंकि", "▁वह", "▁हर", "▁दिन", "▁अपने", "▁द", "ांत", "ों", "▁को", "▁ब्र", "श", "▁नहीं", "▁कर", "▁रही", "▁थी", "▁जैसे", "▁कि", "▁उसे", "▁चाहिए", "।", "\"", "आ", "प", "को", "▁हर", "▁दिन", "▁इसे", "▁दो", "हरा", "ने", "▁की", "▁जर", "ूरत", "▁है", "▁ता", "कि", "▁आपके", "▁द", "ांत", "▁सू", "ं", "घ", "▁न", "▁जाए", ",\"", "▁उसके", "▁म", "म्", "मी", "▁ने", "▁कहा", "।", "इस", "लिए", "▁स", "ै", "ली", "▁ने", "▁हर", "▁दिन", "▁अपने", "▁द", "ांत", "ों", "▁को", "▁ब्र", "श", "▁और", "▁फ", "्ल", "ॉ", "स", "▁करना", "▁शुरू", "▁कर", "▁दिया", "।", "▁उसके", "▁आ", "श्च", "र्य", "▁के", "▁लिए", ",", "▁बद", "ब", "ू", "दार", "▁दा", "ँ", "त", "▁बेह", "तर", "▁और", "▁बेह", "तर", "▁सू", "ं", "घ", "ने", "▁ल", "गे", "।", "स", "ै", "ली", "▁इत", "नी", "▁उत्", "स", "ाह", "ित", "▁थी", "▁कि", "▁उसने", "▁अपने", "▁परिवार", "▁और", "▁दो", "स्त", "ों", "▁को", "▁अपना", "▁न", "या", "▁सा", "फ", "▁द", "ांत", "▁दिख", "ा", "या", "।", "▁हर", "▁कोई", "▁उसके", "▁लिए", "▁बहुत", "▁खु", "श", "▁था", "।", "▁उस", "▁दिन", "▁से", ",", "▁स", "ै", "ली", "▁ने", "▁हर", "▁दिन", "▁अपने", "▁द", "ांत", "ों", "▁को", "▁ब्र", "श", "▁करने", "▁के", "▁लिए", "▁अपने", "▁द", "ांत", "ों", "▁को", "▁दो", "हरा", "ना", "▁सुन", "ि", "श्चित", "▁किया", "▁ता", "कि", "▁उसके", "▁द", "ांत", "▁सा", "फ", "▁और", "▁ता", "जा", "▁रहे", "।"],
+    values: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 17.31, 35.50, 47.66, 32.47, 37.19, 22.02, 0.00, 0.00, 10.88, 11.20, 0.00, 0.00, 9.94, 34.97, 73.62, 78.00, 53.19, 65.62, 66.50, 57.62, 27.58, 0.00, 54.81, 98.75, 71.69, 52.50, 29.91, 21.67, 0.00, 12.70, 0.00, 51.44, 56.38, 0.00, 0.00, 56.28, 45.53, 58.97, 35.84, 26.53, 44.00, 37.09, 23.83, 7.97, 0.00, 0.00, 0.00, 0.00, 10.91, 0.00, 8.05, 0.00, 0.00, 0.00, 18.14, 20.53, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 13.47, 0.00, 9.47, 0.00, 35.47, 25.08, 39.94, 29.17, 18.22, 40.09, 19.28, 20.30, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 12.99, 8.41, 0.00, 0.00, 13.56, 20.61, 11.03, 11.16, 16.66, 0.00, 14.11, 8.67, 12.05, 8.28, 10.95, 0.00, 0.00, 0.00, 9.46, 0.00, 0.00, 0.00, 0.00, 13.16, 9.16, 8.05, 0.00, 11.74, 0.00, 0.00, 12.62, 0.00, 8.90, 0.00, 0.00, 0.00, 0.00, 0.00, 9.35, 25.86, 0.00, 0.00, 10.04, 12.42, 28.98, 27.98, 35.94, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 10.19, 0.00, 10.11, 0.00, 0.00, 6.36, 0.00, 10.25, 13.68, 9.33, 6.76, 10.84, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 10.09, 39.47, 37.25, 11.15, 36.88, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 8.16, 0.00, 19.33, 0.00, 0.00, 0.00, 0.00, 0.00, 10.62, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 16.64, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 7.99, 0.00, 0.00, 0.00, 0.00, 9.80, 0.00, 9.20, 0.00, 8.85, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 7.44, 6.99, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 16.34, 7.84, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00],
+    gloss: "&ldquo;Sally has a very smelly tooth. Whenever she spoke, people covered their noses and stepped back. Her mom explains it&rsquo;s because she isn&rsquo;t brushing every day. So Sally starts brushing and flossing daily, and to her surprise, the smelly tooth starts smelling better and better. She proudly shows off her clean teeth to family and friends, and everyone is happy for her.&rdquo;"
+  },
+  { maxValue: 100 }
+);
+
+// Angry vs Disgusted on a single full English story (the rude man in the
+// park), same scale on both sides, to show disgusted riding on angry's
+// signal: near-identical shape, consistently weaker, no localized divergence.
+renderTokenDiffRow(
+  "disgust-vs-angry",
+  "Angry vs Disgusted, same story",
+  {
+    tag: "Angry",
+    tokens: ["Once", "▁upon", "▁a", "▁time", ",", "▁there", "▁was", "▁a", "▁woman", "▁named", "▁Lily", ".", "▁She", "▁loved", "▁to", "▁go", "▁for", "▁walks", "▁in", "▁the", "▁park", ".", "▁One", "▁day", ",", "▁she", "▁met", "▁a", "▁rude", "▁man", "▁who", "▁said", "▁mean", "▁things", "▁to", "▁her", ".", "▁", "\n\n", "The", "▁woman", "▁asked", ",", "▁\"", "Why", "▁are", "▁you", "▁being", "▁rude", "▁to", "▁me", "?\"", "▁", "\n\n", "The", "▁man", "▁replied", ",", "▁\"", "I", "▁don", "'", "t", "▁like", "▁people", "▁who", "▁go", "▁for", "▁walks", "▁in", "▁the", "▁park", ".\"", "▁", "\n\n", "The", "▁woman", "▁didn", "'", "t", "▁let", "▁the", "▁man", "'", "s", "▁words", "▁hurt", "▁her", "▁feelings", ".", "▁She", "▁continued", "▁to", "▁go", "▁for", "▁walks", "▁in", "▁the", "▁park", "▁every", "▁day", ".", "▁", "\n\n", "One", "▁day", ",", "▁the", "▁man", "▁saw", "▁the", "▁woman", "▁again", "▁and", "▁apologized", "▁for", "▁being", "▁rude", ".", "▁He", "▁said", ",", "▁\"", "I", "▁was", "▁wrong", "▁to", "▁say", "▁mean", "▁things", "▁to", "▁you", ".", "▁Can", "▁we", "▁be", "▁friends", "?\"", "▁", "\n\n", "The", "▁woman", "▁smiled", "▁and", "▁said", ",", "▁\"", "Of", "▁course", "!", "▁I", "'", "m", "▁happy", "▁to", "▁go", "▁for", "▁a", "▁walk", "▁with", "▁you", ".\"", "▁And", "▁from", "▁that", "▁day", "▁on", ",", "▁they", "▁went", "▁for", "▁walks", "▁in", "▁the", "▁park", "▁together", "▁and", "▁became", "▁good", "▁friends", "."],
+    values: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 34.25, 49.41, 80.19, 66.12, 45.25, 54.97, 17.38, 41.66, 34.56, 5.92, 10.56, 40.91, 40.88, 21.83, 29.84, 42.94, 50.62, 36.41, 40.72, 37.66, 39.03, 18.14, 25.81, 4.39, 18.23, 17.39, 21.56, 79.31, 67.00, 29.02, 74.12, 64.69, 0.00, 0.00, 37.12, 42.62, 37.31, 24.44, 20.14, 10.69, 25.00, 24.23, 9.93, 33.25, 52.22, 55.28, 21.78, 11.52, 24.14, 0.00, 47.59, 56.44, 52.50, 41.53, 62.78, 0.00, 58.66, 47.66, 28.48, 17.55, 6.67, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 37.97, 0.00, 0.00, 0.00, 0.00, 39.53, 0.00, 0.00, 0.00, 0.00, 16.39, 13.10, 0.00, 0.00, 0.00, 0.00, 10.50, 0.00, 29.91, 31.48, 12.98, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 16.89, 27.64, 57.31, 59.28, 40.16, 36.09, 21.06, 11.09, 0.00, 6.35, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 15.27, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 20.72, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
+  },
+  {
+    tag: "Disgusted",
+    tokens: ["Once", "▁upon", "▁a", "▁time", ",", "▁there", "▁was", "▁a", "▁woman", "▁named", "▁Lily", ".", "▁She", "▁loved", "▁to", "▁go", "▁for", "▁walks", "▁in", "▁the", "▁park", ".", "▁One", "▁day", ",", "▁she", "▁met", "▁a", "▁rude", "▁man", "▁who", "▁said", "▁mean", "▁things", "▁to", "▁her", ".", "▁", "\n\n", "The", "▁woman", "▁asked", ",", "▁\"", "Why", "▁are", "▁you", "▁being", "▁rude", "▁to", "▁me", "?\"", "▁", "\n\n", "The", "▁man", "▁replied", ",", "▁\"", "I", "▁don", "'", "t", "▁like", "▁people", "▁who", "▁go", "▁for", "▁walks", "▁in", "▁the", "▁park", ".\"", "▁", "\n\n", "The", "▁woman", "▁didn", "'", "t", "▁let", "▁the", "▁man", "'", "s", "▁words", "▁hurt", "▁her", "▁feelings", ".", "▁She", "▁continued", "▁to", "▁go", "▁for", "▁walks", "▁in", "▁the", "▁park", "▁every", "▁day", ".", "▁", "\n\n", "One", "▁day", ",", "▁the", "▁man", "▁saw", "▁the", "▁woman", "▁again", "▁and", "▁apologized", "▁for", "▁being", "▁rude", ".", "▁He", "▁said", ",", "▁\"", "I", "▁was", "▁wrong", "▁to", "▁say", "▁mean", "▁things", "▁to", "▁you", ".", "▁Can", "▁we", "▁be", "▁friends", "?\"", "▁", "\n\n", "The", "▁woman", "▁smiled", "▁and", "▁said", ",", "▁\"", "Of", "▁course", "!", "▁I", "'", "m", "▁happy", "▁to", "▁go", "▁for", "▁a", "▁walk", "▁with", "▁you", ".\"", "▁And", "▁from", "▁that", "▁day", "▁on", ",", "▁they", "▁went", "▁for", "▁walks", "▁in", "▁the", "▁park", "▁together", "▁and", "▁became", "▁good", "▁friends", "."],
+    values: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 29.23, 35.38, 58.22, 47.56, 26.44, 38.44, 4.19, 23.81, 8.14, 0.00, 0.00, 16.83, 9.95, 2.84, 6.69, 17.55, 27.12, 18.95, 17.73, 19.31, 18.08, -3.02, 3.93, 0.00, 5.46, 4.52, 15.26, 48.16, 43.12, 12.25, 42.78, 38.38, 0.00, 0.00, 14.88, 31.20, 25.62, 13.64, 12.84, 4.79, 15.95, 15.86, -0.13, 22.06, 24.91, 32.84, 1.81, 0.00, 0.00, 0.00, 29.92, 14.48, 16.42, 21.89, 29.22, 0.00, 32.81, 17.70, 3.31, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 26.94, 0.00, 0.00, 0.00, 0.00, 22.02, 0.00, 0.00, 0.00, 0.00, 7.52, 0.28, 0.00, 0.00, 0.00, 0.00, -1.98, 0.00, 11.42, 15.83, -1.52, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.93, 0.09, 26.77, 31.58, 18.61, 14.45, 3.03, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
+  },
+  { maxValue: 85 }
+);
+
+// Happy vs Excited on a single full story, shown in both languages, to
+// demonstrate the two vectors track each other closely (excited runs
+// hotter at the same spots in English; in Hindi the shapes still track but
+// excited leads on anticipation while happy lands on the payoff).
+renderTokenDiffRow(
+  "happy-vs-excited",
+  "English: Happy vs Excited, same story",
+  {
+    tag: "Happy",
+    tokens: ["Once", "▁upon", "▁a", "▁time", ",", "▁there", "▁was", "▁a", "▁little", "▁girl", "▁named", "▁Lily", ".", "▁She", "▁loved", "▁to", "▁read", "▁books", ",", "▁but", "▁she", "▁didn", "'", "t", "▁have", "▁a", "▁bookcase", "▁to", "▁keep", "▁them", "▁in", ".", "▁One", "▁day", ",", "▁her", "▁parents", "▁surprised", "▁her", "▁with", "▁a", "▁big", "▁purple", "▁bookcase", "!", "▁Lily", "▁was", "▁so", "▁happy", "▁and", "▁excited", ".", "▁She", "▁quickly", "▁filled", "▁it", "▁with", "▁all", "▁her", "▁favorite", "▁books", ".", "\n\n", "As", "▁she", "▁read", "▁more", "▁books", ",", "▁Lily", "▁gained", "▁more", "▁knowledge", "▁and", "▁imagination", ".", "▁She", "▁loved", "▁looking", "▁at", "▁the", "▁pictures", "▁and", "▁reading", "▁the", "▁words", ".", "▁Every", "▁night", "▁before", "▁bed", ",", "▁she", "▁would", "▁pick", "▁out", "▁a", "▁book", "▁from", "▁her", "▁bookcase", "▁and", "▁read", "▁it", "▁with", "▁her", "▁parents", ".", "▁They", "▁would", "▁ask", "▁her", "▁questions", "▁about", "▁the", "▁story", "▁and", "▁she", "▁would", "▁tell", "▁them", "▁what", "▁she", "▁learned", ".", "\n\n", "Lily", "'", "s", "▁bookcase", "▁became", "▁her", "▁favorite", "▁thing", "▁in", "▁her", "▁room", ".", "▁She", "▁loved", "▁how", "▁it", "▁looked", "▁and", "▁how", "▁it", "▁kept", "▁her", "▁books", "▁organized", ".", "▁She", "▁even", "▁showed", "▁it", "▁off", "▁to", "▁her", "▁friends", "▁when", "▁they", "▁came", "▁over", "▁to", "▁play", ".", "▁Lily", "▁was", "▁grateful", "▁for", "▁her", "▁bookcase", "▁and", "▁all", "▁the", "▁knowledge", "▁she", "▁gained", "▁from", "▁her", "▁books", "."],
+    values: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 52.88, 53.53, 0.00, 0.00, 0.00, 0.00, 54.31, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 62.28, 70.56, 57.81, 0.00, 0.00, 79.69, 91.19, 97.38, 89.56, 78.56, 88.94, 63.09, 60.53, 75.56, 0.00, 0.00, 0.00, 56.66, 0.00, 56.62, 0.00, 55.81, 61.09, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 56.66, 57.16, 55.16, 0.00, 60.97, 53.34, 62.59, 62.06, 56.50, 0.00, 0.00, 0.00, 0.00, 60.09, 58.34, 55.94, 58.84, 62.19, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 55.19, 0.00, 60.72, 62.75, 0.00, 0.00, 55.59, 0.00, 70.75, 53.00, 0.00, 68.94, 0.00, 0.00, 65.19, 72.25, 76.69, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 61.97, 58.66, 76.06, 0.00, 57.50, 0.00, 0.00, 0.00, 57.84, 58.72, 65.06, 0.00, 0.00, 57.06, 58.06, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 69.31, 0.00, 57.50, 0.00, 0.00, 0.00, 52.69, 0.00, 0.00, 0.00, 0.00, 0.00, 61.72, 74.88, 66.06, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 60.66, 74.88, 86.31, 0.00, 0.00, 0.00, 0.00, 68.88, 55.53, 71.50, 0.00, 0.00, 0.00, 0.00, 57.00, 53.22, 59.78]
+  },
+  {
+    tag: "Excited",
+    tokens: ["Once", "▁upon", "▁a", "▁time", ",", "▁there", "▁was", "▁a", "▁little", "▁girl", "▁named", "▁Lily", ".", "▁She", "▁loved", "▁to", "▁read", "▁books", ",", "▁but", "▁she", "▁didn", "'", "t", "▁have", "▁a", "▁bookcase", "▁to", "▁keep", "▁them", "▁in", ".", "▁One", "▁day", ",", "▁her", "▁parents", "▁surprised", "▁her", "▁with", "▁a", "▁big", "▁purple", "▁bookcase", "!", "▁Lily", "▁was", "▁so", "▁happy", "▁and", "▁excited", ".", "▁She", "▁quickly", "▁filled", "▁it", "▁with", "▁all", "▁her", "▁favorite", "▁books", ".", "\n\n", "As", "▁she", "▁read", "▁more", "▁books", ",", "▁Lily", "▁gained", "▁more", "▁knowledge", "▁and", "▁imagination", ".", "▁She", "▁loved", "▁looking", "▁at", "▁the", "▁pictures", "▁and", "▁reading", "▁the", "▁words", ".", "▁Every", "▁night", "▁before", "▁bed", ",", "▁she", "▁would", "▁pick", "▁out", "▁a", "▁book", "▁from", "▁her", "▁bookcase", "▁and", "▁read", "▁it", "▁with", "▁her", "▁parents", ".", "▁They", "▁would", "▁ask", "▁her", "▁questions", "▁about", "▁the", "▁story", "▁and", "▁she", "▁would", "▁tell", "▁them", "▁what", "▁she", "▁learned", ".", "\n\n", "Lily", "'", "s", "▁bookcase", "▁became", "▁her", "▁favorite", "▁thing", "▁in", "▁her", "▁room", ".", "▁She", "▁loved", "▁how", "▁it", "▁looked", "▁and", "▁how", "▁it", "▁kept", "▁her", "▁books", "▁organized", ".", "▁She", "▁even", "▁showed", "▁it", "▁off", "▁to", "▁her", "▁friends", "▁when", "▁they", "▁came", "▁over", "▁to", "▁play", ".", "▁Lily", "▁was", "▁grateful", "▁for", "▁her", "▁bookcase", "▁and", "▁all", "▁the", "▁knowledge", "▁she", "▁gained", "▁from", "▁her", "▁books", "."],
+    values: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 38.72, 43.12, 42.03, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 52.16, 60.91, 49.19, 0.00, 43.50, 89.69, 116.69, 118.88, 105.56, 96.00, 110.69, 104.50, 81.00, 107.50, 69.56, 0.00, 0.00, 54.28, 40.25, 49.28, 0.00, 47.41, 43.34, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 45.53, 39.69, 38.41, 0.00, 39.06, 48.81, 45.91, 55.97, 48.88, 0.00, 0.00, 0.00, 0.00, 47.12, 45.91, 0.00, 40.91, 44.19, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 37.09, 0.00, 47.00, 0.00, 0.00, 43.59, 0.00, 0.00, 0.00, 0.00, 36.91, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 42.34, 61.28, 41.09, 46.53, 0.00, 0.00, 0.00, 0.00, 0.00, 46.09, 0.00, 0.00, 40.78, 38.53, 37.84, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 52.06, 39.12, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 56.19, 52.06, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 47.50, 61.50, 0.00, 0.00, 0.00, 0.00, 41.03, 0.00, 43.22, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
+  },
+  { maxValue: 120 }
+);
+
+renderTokenDiffRow(
+  "happy-vs-excited",
+  "Hindi: Happy vs Excited, same story",
+  {
+    tag: "Happy",
+    tokens: ["एक", "▁बार", ",", "▁एक", "▁छोट", "ी", "▁लड़", "की", "▁थी", "।", "▁वह", "▁बहुत", "▁उत्", "सा", "ही", "▁थी", "▁और", "▁हम", "ेशा", "▁म", "ज़", "े", "▁करने", "▁के", "▁तरी", "कों", "▁की", "▁त", "ला", "श", "▁करती", "▁थी", "।", "▁एक", "▁दिन", ",", "▁उसने", "▁प", "ार्", "क", "▁में", "▁जाने", "▁का", "▁फै", "स", "ला", "▁किया", "।", "▁उसने", "▁उत्", "स", "ाह", "▁के", "▁साथ", "▁चार", "ों", "▁ओर", "▁देखा", "▁और", "▁प", "क्ष", "ियों", "▁से", "▁भ", "रे", "▁एक", "▁विश", "ाल", "▁पि", "ंज", "रे", "▁को", "▁देखा", "।", "ल", "ड़", "की", "▁ने", "▁वि", "स्", "म", "य", "▁के", "▁साथ", "▁पि", "ंज", "रे", "▁को", "▁देखा", "▁और", "▁अपनी", "▁मा", "ँ", "▁से", "▁पू", "छ", "ा", ",", "▁\"", "वे", "▁प", "क्ष", "ी", "▁क्या", "▁हैं", "?", "▁क्या", "▁वे", "▁दो", "स्ता", "ना", "▁हैं", "?\"", "▁उसकी", "▁मा", "ँ", "▁मु", "स्", "कु", "रा", "ई", "▁और", "▁कहा", ",", "▁\"", "हाँ", "▁वे", "▁हैं", "!", "▁यदि", "▁आप", "▁वास्त", "व", "▁में", "▁अच्छ", "े", "▁हैं", ",", "▁तो", "▁वे", "▁अपने", "▁पि", "ंज", "रे", "▁से", "▁भी", "▁बाहर", "▁आ", "▁सकते", "▁हैं", "▁और", "▁आपके", "▁लिए", "▁उ", "ड़", "ान", "▁भर", "▁सकते", "▁हैं", "।", "\"", "छ", "ोट", "ी", "▁लड़", "की", "▁इस", "▁पर", "▁विश्व", "ास", "▁नहीं", "▁कर", "▁सकती", "▁थी", "।", "▁वह", "▁घ", "ास", "▁पर", "▁बैठ", "▁गई", "▁और", "▁प", "क्ष", "ियों", "▁को", "▁ट", "क", "ट", "की", "▁लगा", "ने", "▁ल", "गी", "।", "▁एक", "▁के", "▁बाद", "▁एक", ",", "▁प", "क्ष", "ियों", "▁ने", "▁अपने", "▁पि", "ंज", "रे", "▁से", "▁उ", "ड़", "ान", "▁भ", "री", "▁और", "▁लड़", "की", "▁की", "▁बाह", "ों", "▁और", "▁स", "िर", "▁पर", "▁उ", "त", "रे", "।", "▁वह", "▁उत्", "स", "ाह", "▁के", "▁साथ", "▁मु", "स्", "कु", "रा", "ई", "▁और", "▁ह", "ंस", "ते", "▁हुए", "▁क्योंकि", "▁प", "क्ष", "ी", "▁उसके", "▁चार", "ों", "▁ओर", "▁उ", "ड़", "▁गए", "।", "▁लड़", "की", "▁को", "▁बहुत", "▁खु", "शी", "▁हुई", ",", "▁जैसे", "▁वह", "▁एक", "▁परी", "▁क", "था", "▁में", "▁थी", "।", "▁दिन", "▁के", "▁अंत", "▁में", ",", "▁प", "क्ष", "ी", "▁सभी", "▁अपने", "▁पि", "ंज", "रे", "▁में", "▁वाप", "स", "▁च", "ले", "▁गए", "▁और", "▁लड़", "की", "▁ने", "▁अ", "ल", "वि", "दा", "▁कहा", "।", "▁वह", "▁उत्", "स", "ाह", "▁से", "▁ल", "हरा", "या", "▁क्योंकि", "▁प", "क्ष", "ियों", "▁ने", "▁उ", "ड़", "ान", "▁भ", "री", ",", "▁उन्हें", "▁प", "ार्", "क", "▁में", "▁एक", "▁म", "जे", "दार", "▁दिन", "▁के", "▁लिए", "▁धन", "्य", "वाद", "▁दिया", "।"],
+    values: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 41.31, 43.41, 0.00, 48.72, 42.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 48.84, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 43.66, 46.44, 40.78, 45.66, 43.56, 40.56, 0.00, 0.00, 0.00, 0.00, 50.88, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 49.12, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 50.44, 47.53, 36.41, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 37.00, 44.16, 51.50, 39.06, 45.59, 40.69, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 37.75, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 39.81, 0.00, 0.00, 0.00, 0.00, 68.62, 45.28, 47.28, 0.00, 0.00, 0.00, 0.00, 0.00, 54.72, 42.03, 53.09, 35.69, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 36.47, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 38.69, 74.31, 55.53, 44.59, 40.94, 42.12, 59.25, 53.81, 47.22, 36.72, 48.00, 58.25, 52.94, 52.34, 0.00, 0.00, 43.41, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 44.03, 0.00, 59.81, 57.19, 52.59, 45.00, 44.69, 45.91, 50.31, 35.81, 62.44, 64.88, 0.00, 0.00, 0.00, 0.00, 36.03, 41.31, 47.75, 41.22, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 45.84, 0.00, 0.00, 0.00, 0.00, 39.50, 61.41, 54.72, 49.09, 46.88, 54.69, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 57.53, 35.78, 0.00, 0.00, 0.00, 0.00, 60.72, 52.72, 0.00, 50.78, 0.00, 43.41, 43.06, 0.00, 0.00, 0.00, 0.00, 39.00]
+  },
+  {
+    tag: "Excited",
+    tokens: ["एक", "▁बार", ",", "▁एक", "▁छोट", "ी", "▁लड़", "की", "▁थी", "।", "▁वह", "▁बहुत", "▁उत्", "सा", "ही", "▁थी", "▁और", "▁हम", "ेशा", "▁म", "ज़", "े", "▁करने", "▁के", "▁तरी", "कों", "▁की", "▁त", "ला", "श", "▁करती", "▁थी", "।", "▁एक", "▁दिन", ",", "▁उसने", "▁प", "ार्", "क", "▁में", "▁जाने", "▁का", "▁फै", "स", "ला", "▁किया", "।", "▁उसने", "▁उत्", "स", "ाह", "▁के", "▁साथ", "▁चार", "ों", "▁ओर", "▁देखा", "▁और", "▁प", "क्ष", "ियों", "▁से", "▁भ", "रे", "▁एक", "▁विश", "ाल", "▁पि", "ंज", "रे", "▁को", "▁देखा", "।", "ल", "ड़", "की", "▁ने", "▁वि", "स्", "म", "य", "▁के", "▁साथ", "▁पि", "ंज", "रे", "▁को", "▁देखा", "▁और", "▁अपनी", "▁मा", "ँ", "▁से", "▁पू", "छ", "ा", ",", "▁\"", "वे", "▁प", "क्ष", "ी", "▁क्या", "▁हैं", "?", "▁क्या", "▁वे", "▁दो", "स्ता", "ना", "▁हैं", "?\"", "▁उसकी", "▁मा", "ँ", "▁मु", "स्", "कु", "रा", "ई", "▁और", "▁कहा", ",", "▁\"", "हाँ", "▁वे", "▁हैं", "!", "▁यदि", "▁आप", "▁वास्त", "व", "▁में", "▁अच्छ", "े", "▁हैं", ",", "▁तो", "▁वे", "▁अपने", "▁पि", "ंज", "रे", "▁से", "▁भी", "▁बाहर", "▁आ", "▁सकते", "▁हैं", "▁और", "▁आपके", "▁लिए", "▁उ", "ड़", "ान", "▁भर", "▁सकते", "▁हैं", "।", "\"", "छ", "ोट", "ी", "▁लड़", "की", "▁इस", "▁पर", "▁विश्व", "ास", "▁नहीं", "▁कर", "▁सकती", "▁थी", "।", "▁वह", "▁घ", "ास", "▁पर", "▁बैठ", "▁गई", "▁और", "▁प", "क्ष", "ियों", "▁को", "▁ट", "क", "ट", "की", "▁लगा", "ने", "▁ल", "गी", "।", "▁एक", "▁के", "▁बाद", "▁एक", ",", "▁प", "क्ष", "ियों", "▁ने", "▁अपने", "▁पि", "ंज", "रे", "▁से", "▁उ", "ड़", "ान", "▁भ", "री", "▁और", "▁लड़", "की", "▁की", "▁बाह", "ों", "▁और", "▁स", "िर", "▁पर", "▁उ", "त", "रे", "।", "▁वह", "▁उत्", "स", "ाह", "▁के", "▁साथ", "▁मु", "स्", "कु", "रा", "ई", "▁और", "▁ह", "ंस", "ते", "▁हुए", "▁क्योंकि", "▁प", "क्ष", "ी", "▁उसके", "▁चार", "ों", "▁ओर", "▁उ", "ड़", "▁गए", "।", "▁लड़", "की", "▁को", "▁बहुत", "▁खु", "शी", "▁हुई", ",", "▁जैसे", "▁वह", "▁एक", "▁परी", "▁क", "था", "▁में", "▁थी", "।", "▁दिन", "▁के", "▁अंत", "▁में", ",", "▁प", "क्ष", "ी", "▁सभी", "▁अपने", "▁पि", "ंज", "रे", "▁में", "▁वाप", "स", "▁च", "ले", "▁गए", "▁और", "▁लड़", "की", "▁ने", "▁अ", "ल", "वि", "दा", "▁कहा", "।", "▁वह", "▁उत्", "स", "ाह", "▁से", "▁ल", "हरा", "या", "▁क्योंकि", "▁प", "क्ष", "ियों", "▁ने", "▁उ", "ड़", "ान", "▁भ", "री", ",", "▁उन्हें", "▁प", "ार्", "क", "▁में", "▁एक", "▁म", "जे", "दार", "▁दिन", "▁के", "▁लिए", "▁धन", "्य", "वाद", "▁दिया", "।"],
+    values: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 36.22, 39.94, 47.75, 0.00, 53.81, 41.62, 0.00, 0.00, 32.28, 39.72, 0.00, 35.69, 34.81, 0.00, 0.00, 0.00, 0.00, 45.91, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 44.06, 58.66, 56.41, 65.31, 63.81, 62.34, 38.97, 0.00, 38.38, 0.00, 48.44, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 31.44, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 40.69, 0.00, 0.00, 62.75, 65.25, 44.28, 40.62, 0.00, 0.00, 42.78, 42.84, 0.00, 0.00, 0.00, 0.00, 0.00, 38.53, 50.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 44.66, 0.00, 0.00, 0.00, 0.00, 91.94, 54.59, 63.25, 35.78, 47.66, 0.00, 0.00, 0.00, 89.94, 78.00, 84.19, 68.12, 0.00, 34.75, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 36.84, 75.00, 63.38, 53.72, 59.62, 63.72, 72.12, 59.25, 37.94, 0.00, 39.28, 52.56, 43.34, 54.22, 0.00, 0.00, 33.78, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 37.44, 0.00, 48.28, 47.25, 37.03, 0.00, 31.66, 36.75, 40.59, 41.78, 65.75, 61.72, 0.00, 0.00, 0.00, 31.95, 40.53, 39.25, 32.28, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 31.59, 0.00, 0.00, 0.00, 0.00, 38.50, 56.41, 51.00, 45.66, 60.56, 79.12, 39.06, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 45.62, 0.00, 0.00, 0.00, 0.00, 0.00, 42.38, 35.84, 0.00, 31.97, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 35.38]
+  },
+  { maxValue: 95, gloss: "&ldquo;A little girl is excited to visit the park, where she sees a huge cage full of birds. Her mom tells her that if she's really good, the birds might fly out and land on her. She can't believe it &mdash; but sits on the grass and watches, and one by one the birds fly out and land on her arms and head. She smiles and laughs with excitement as they fly around her, feeling like she's in a fairy tale. At the end of the day, the birds return to their cage and she waves goodbye, thanking them for a fun day at the park.&rdquo;" }
+);
+
+// Happy vs Kind on a single full English story (Max and Sue find an injured
+// bird), same tokens, to show the self/other split: happy fires on the
+// friendship/fun act, kind fires on the caretaking act, and both fire
+// together only at the shared happy-ending resolution.
+renderTokenDiffRow(
+  "kind-vs-happy",
+  "Happy vs Kind, same story",
+  {
+    tag: "Happy",
+    tokens: ["Once", "▁upon", "▁a", "▁time", ",", "▁there", "▁was", "▁a", "▁sweet", "▁dog", "▁named", "▁Max", ".", "▁Max", "▁loved", "▁to", "▁jog", "▁in", "▁the", "▁park", "▁with", "▁his", "▁friend", ",", "▁a", "▁little", "▁girl", "▁named", "▁Sue", ".", "▁Sue", "▁and", "▁Max", "▁were", "▁best", "▁friends", ".", "▁They", "▁played", "▁together", "▁every", "▁day", ".", "\n\n", "One", "▁day", ",", "▁Max", "▁and", "▁Sue", "▁went", "▁to", "▁the", "▁park", "▁to", "▁jog", ".", "▁Max", "▁said", ",", "▁\"", "Sue", ",", "▁I", "▁will", "▁lead", "▁the", "▁way", ".\"", "▁Max", "▁ran", "▁fast", "▁and", "▁Sue", "▁followed", "▁him", ".", "▁They", "▁jog", "ged", "▁and", "▁played", ",", "▁having", "▁a", "▁lot", "▁of", "▁fun", ".", "▁As", "▁they", "▁jog", "ged", ",", "▁they", "▁saw", "▁a", "▁big", "▁tree", "▁with", "▁a", "▁hole", "▁in", "▁it", ".", "\n\n", "Max", "▁said", ",", "▁\"", "Sue", ",", "▁let", "'", "s", "▁look", "▁inside", "▁the", "▁tree", "▁hole", ".\"", "▁They", "▁looked", "▁inside", "▁and", "▁saw", "▁a", "▁little", "▁bird", "▁that", "▁couldn", "'", "t", "▁fly", ".", "▁Max", "▁and", "▁Sue", "▁knew", "▁they", "▁had", "▁to", "▁help", "▁the", "▁bird", ".", "▁They", "▁took", "▁the", "▁bird", "▁home", "▁and", "▁cared", "▁for", "▁it", ".", "▁After", "▁some", "▁days", ",", "▁the", "▁bird", "▁was", "▁able", "▁to", "▁fly", "▁again", ".", "\n\n", "Max", "▁and", "▁Sue", "▁were", "▁very", "▁happy", "▁to", "▁see", "▁the", "▁bird", "▁fly", ".", "▁They", "▁knew", "▁that", "▁their", "▁jog", "▁in", "▁the", "▁park", "▁had", "▁led", "▁them", "▁to", "▁help", "▁the", "▁little", "▁bird", ".", "▁The", "▁bird", "▁said", ",", "▁\"", "Thank", "▁you", ",", "▁Max", "▁and", "▁Sue", "!\"", "▁And", "▁they", "▁all", "▁played", "▁together", "▁in", "▁the", "▁park", ",", "▁now", "▁with", "▁one", "▁more", "▁friend", "."],
+    values: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 68.00, 63.16, 0.00, 55.56, 0.00, 58.09, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 57.53, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 60.31, 0.00, 0.00, 60.31, 62.44, 82.75, 71.19, 72.06, 54.31, 0.00, 61.72, 55.34, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 56.12, 64.94, 60.53, 61.62, 0.00, 65.00, 86.88, 75.25, 76.19, 55.34, 0.00, 0.00, 0.00, 0.00, 54.19, 56.69, 55.47, 0.00, 0.00, 0.00, 0.00, 0.00, 66.25, 73.12, 57.12, 59.69, 61.09, 0.00, 0.00, 0.00, 0.00, 69.94, 56.50, 0.00, 0.00, 61.75, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 60.25, 76.50, 77.81, 62.53, 68.75, 59.91, 0.00, 70.12, 87.19, 72.75, 74.88, 64.81, 62.22, 55.38, 65.44]
+  },
+  {
+    tag: "Kind",
+    tokens: ["Once", "▁upon", "▁a", "▁time", ",", "▁there", "▁was", "▁a", "▁sweet", "▁dog", "▁named", "▁Max", ".", "▁Max", "▁loved", "▁to", "▁jog", "▁in", "▁the", "▁park", "▁with", "▁his", "▁friend", ",", "▁a", "▁little", "▁girl", "▁named", "▁Sue", ".", "▁Sue", "▁and", "▁Max", "▁were", "▁best", "▁friends", ".", "▁They", "▁played", "▁together", "▁every", "▁day", ".", "\n\n", "One", "▁day", ",", "▁Max", "▁and", "▁Sue", "▁went", "▁to", "▁the", "▁park", "▁to", "▁jog", ".", "▁Max", "▁said", ",", "▁\"", "Sue", ",", "▁I", "▁will", "▁lead", "▁the", "▁way", ".\"", "▁Max", "▁ran", "▁fast", "▁and", "▁Sue", "▁followed", "▁him", ".", "▁They", "▁jog", "ged", "▁and", "▁played", ",", "▁having", "▁a", "▁lot", "▁of", "▁fun", ".", "▁As", "▁they", "▁jog", "ged", ",", "▁they", "▁saw", "▁a", "▁big", "▁tree", "▁with", "▁a", "▁hole", "▁in", "▁it", ".", "\n\n", "Max", "▁said", ",", "▁\"", "Sue", ",", "▁let", "'", "s", "▁look", "▁inside", "▁the", "▁tree", "▁hole", ".\"", "▁They", "▁looked", "▁inside", "▁and", "▁saw", "▁a", "▁little", "▁bird", "▁that", "▁couldn", "'", "t", "▁fly", ".", "▁Max", "▁and", "▁Sue", "▁knew", "▁they", "▁had", "▁to", "▁help", "▁the", "▁bird", ".", "▁They", "▁took", "▁the", "▁bird", "▁home", "▁and", "▁cared", "▁for", "▁it", ".", "▁After", "▁some", "▁days", ",", "▁the", "▁bird", "▁was", "▁able", "▁to", "▁fly", "▁again", ".", "\n\n", "Max", "▁and", "▁Sue", "▁were", "▁very", "▁happy", "▁to", "▁see", "▁the", "▁bird", "▁fly", ".", "▁They", "▁knew", "▁that", "▁their", "▁jog", "▁in", "▁the", "▁park", "▁had", "▁led", "▁them", "▁to", "▁help", "▁the", "▁little", "▁bird", ".", "▁The", "▁bird", "▁said", ",", "▁\"", "Thank", "▁you", ",", "▁Max", "▁and", "▁Sue", "!\"", "▁And", "▁they", "▁all", "▁played", "▁together", "▁in", "▁the", "▁park", ",", "▁now", "▁with", "▁one", "▁more", "▁friend", "."],
+    values: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 56.91, 0.00, 0.00, 0.00, 0.00, 56.38, 0.00, 87.38, 61.31, 0.00, 62.56, 60.28, 0.00, 0.00, 0.00, 65.62, 73.50, 64.50, 0.00, 0.00, 0.00, 75.06, 60.75, 64.69, 76.38, 85.62, 74.00, 68.81, 69.25, 68.12, 0.00, 0.00, 58.66, 0.00, 0.00, 0.00, 0.00, 70.56, 77.75, 0.00, 0.00, 72.06, 85.56, 84.25, 68.31, 64.38, 0.00, 76.69, 0.00, 0.00, 66.00, 62.25, 78.62, 91.25, 85.62, 0.00, 0.00, 0.00, 80.62, 87.06, 69.94, 74.06, 92.12, 69.62, 63.69, 0.00, 0.00, 83.19, 68.62, 0.00, 0.00, 66.06, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 63.72, 66.06, 0.00, 63.00, 60.16, 0.00, 64.69, 78.12, 73.88, 71.44, 67.75, 61.28, 56.84, 70.12]
+  },
+  { maxValue: 95 }
+);
+
+// Two different Hindi stories, one for Kind and one for Excited, since no
+// single story lights up cleanly under both in Hindi the way the Max/Sue
+// story does in English. Shown together to make the same self/other point:
+// kind fires on the frame of lending/helping/caring for others, excited
+// fires on the literal trigger word for the character's own happiness.
+renderSingleStoryRow(
+  "kind-hi-vs-excited-hi",
+  "Hindi: Kind, the pigeon who loved to lend things",
+  {
+    tag: "Kind",
+    tokens: ["एक", "▁बार", ",", "▁एक", "▁प", "क्ष", "ी", "▁था", "▁जो", "▁उ", "धार", "▁दे", "ना", "▁प", "संद", "▁करता", "▁था", "।", "▁उस", "का", "▁नाम", "▁क", "ब", "ू", "तर", "▁था", "▁और", "▁वह", "▁बहुत", "▁सा", "व", "धान", "▁प", "क्ष", "ी", "▁थी", "।", "▁हर", "▁दिन", ",", "▁क", "ब", "ू", "तर", "▁अपने", "▁दो", "स्त", "ों", "▁को", "▁मदद", "▁करने", "▁वाले", "▁वि", "ंग", "▁को", "▁उ", "धार", "▁दे", "गा", "।", "▁वह", "▁उन्हें", "▁भ", "ोजन", "▁प्राप्त", "▁करने", "▁में", "▁मदद", "▁करती", "▁है", ",", "▁आ", "राम", "द", "ायक", "▁घ", "ों", "स", "ले", "▁बना", "ती", "▁है", "▁और", "▁यहां", "▁तक", "▁कि", "▁यह", "▁भी", "▁सुन", "ि", "श्चित", "▁करती", "▁है", "▁कि", "▁हर", "▁कोई", "▁म", "ज़", "े", "▁कर", "▁रहा", "▁है", "।", "▁जब", "▁भी", "▁किसी", "▁को", "▁मदद", "▁की", "▁जर", "ूरत", "▁होती", "▁है", ",", "▁तो", "▁क", "ब", "ू", "तर", "▁को", "▁हाथ", "▁उ", "धार", "▁दे", "ना", "▁नि", "श्चित", "▁था", "।", "▁उसकी", "▁सा", "व", "ध", "ानी", "▁ने", "▁सुन", "ि", "श्चित", "▁किया", "▁कि", "▁सब", "▁कुछ", "▁अ", "ड़", "च", "न", "▁के", "▁बिना", "▁बंद", "▁हो", "▁गया", "।", "▁एक", "▁दिन", ",", "▁क", "ब", "ू", "तर", "▁को", "▁एक", "▁विचार", "▁था", "।", "▁उसने", "▁फै", "स", "ला", "▁किया", "▁कि", "▁वह", "▁अपने", "▁दो", "स्त", "ों", "▁से", "▁भी", "▁ब", "ड़ी", "▁ची", "ज", "▁के", "▁लिए", "▁अपनी", "▁मदद", "▁उ", "धार", "▁दे", "ना", "▁चाह", "ती", "▁है", "।", "▁वह", "▁गा", "ँ", "व", "▁में", "▁च", "ली", "▁गई", "▁और", "▁अपने", "▁खेल", "▁के", "▁साथ", "▁छोट", "े", "▁लोगों", "▁की", "▁मदद", "▁की", ",", "▁और", "▁अपने", "▁काम", "▁के", "▁साथ", "▁ब", "ड़े", "▁लोगों", "▁की", "।", "▁क", "ब", "ू", "तर", "▁अपने", "▁प्रयास", "ों", "▁से", "▁इत", "ना", "▁सा", "व", "धान", "▁था", "▁कि", "▁हर", "▁कोई", "▁हम", "ेशा", "▁उसके", "▁लिए", "▁बहुत", "▁आ", "भ", "ारी", "▁था", "।", "▁क", "ब", "ू", "तर", "▁के", "▁अपने", "▁दो", "स्त", "ों", "▁और", "▁गा", "ँ", "व", "▁के", "▁लोगों", "▁को", "▁अपनी", "▁देख", "भ", "ाल", "▁करने", "▁का", "▁विशेष", "▁तरी", "का", "▁है", "▁कि", "▁वह", "▁वास्त", "व", "▁में", "▁एक", "▁बहुत", "▁ही", "▁ख", "ास", "▁प", "क्ष", "ी", "▁बना", "।", "▁तब", "▁से", ",", "▁क", "ब", "ू", "तर", "▁को", "▁उ", "धार", "▁और", "▁देख", "भ", "ाल", "▁के", "▁प्र", "ती", "क", "▁के", "▁रूप", "▁में", "▁जाना", "▁जाता", "▁था", "।", "▁जब", "▁भी", "▁लोगों", "▁ने", "▁एक", "▁क", "ब", "ू", "तर", "▁देखा", ",", "▁तो", "▁उन्हें", "▁याद", "▁किया", "▁जाता", "▁है", "▁कि", "▁वह", "▁उ", "त", "ना", "▁ही", "▁सा", "व", "धान", "▁और", "▁द", "या", "ल", "ु", "▁था", "▁ज", "ित", "ना", "▁कि", "▁क", "ब", "ू", "तर", "▁था", "।"],
+    values: [0.00, 0.00, 0.00, 32.47, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 35.53, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 32.56, 35.38, 34.44, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 32.47, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 45.69, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 53.34, 47.03, 41.09, 0.00, 0.00, 30.86, 34.88, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 33.06, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 42.22, 31.48, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 31.69, 34.03, 0.00, 0.00, 35.56, 31.62, 0.00, 34.00, 35.50, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 35.62, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 33.59, 33.84, 0.00, 0.00, 30.86, 31.95, 0.00, 34.59, 0.00, 0.00, 0.00, 0.00, 0.00, 32.66, 31.59, 0.00, 35.16, 49.53, 0.00, 39.19, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 34.53, 0.00, 46.25, 48.44, 44.06, 0.00, 0.00, 46.44, 35.88, 0.00, 0.00, 0.00, 47.56, 50.16, 44.78, 0.00, 34.91, 36.31, 37.50, 0.00, 0.00, 0.00, 38.53, 36.75, 40.06, 45.16, 0.00, 0.00, 42.94, 38.97, 39.09, 32.75, 0.00, 32.25, 35.03, 0.00, 40.09, 0.00, 0.00, 49.56, 60.53, 47.16, 65.31, 46.41, 39.34, 0.00, 0.00, 0.00, 0.00, 39.81, 0.00, 0.00, 32.25, 0.00, 56.38, 56.03, 40.53, 49.62, 0.00, 0.00, 45.34, 33.81, 0.00, 40.69, 46.88, 37.22, 0.00, 0.00, 0.00, 0.00, 46.91, 0.00, 0.00, 42.50, 35.91, 34.28, 40.88, 0.00, 48.06, 64.81, 34.84, 0.00, 69.06, 0.00, 0.00, 40.03, 42.16, 73.62, 0.00, 0.00, 0.00, 51.81, 75.19, 63.91, 46.72, 40.19, 50.66, 58.50, 43.09, 0.00, 32.88, 69.31, 57.78, 43.59, 37.91, 41.12, 0.00, 0.00, 0.00, 32.94, 48.94, 0.00, 0.00, 0.00, 0.00, 32.00, 41.94],
+    gloss: "&ldquo;Once there was a bird who loved to lend things. Her name was Pigeon, and she was very careful. Every day, Pigeon would lend her helping wing to her friends &mdash; helping them get food, build comfortable nests, and making sure everyone was having fun. Whenever anyone needed help, Pigeon was sure to lend a hand. One day, Pigeon had an idea: to lend her help for something bigger than her friends. She went into the village and helped the young with her games and the old with her work. Pigeon was so careful in her efforts that everyone was always very grateful to her. Her special way of caring for her friends and the villagers made her a truly special bird. From then on, Pigeon was known as a symbol of lending and care. Whenever people saw a pigeon, they were reminded that it was just as careful and kind as she was.&rdquo;"
+  },
+  { maxValue: 80 }
+);
+
+renderSingleStoryRow(
+  "kind-hi-vs-excited-hi",
+  "Hindi: Excited, Bob's wish",
+  {
+    tag: "Excited",
+    tokens: ["एक", "▁बार", "▁एक", "▁लड़", "का", "▁बॉ", "ब", "▁नाम", "क", "▁एक", "▁लड़", "का", "▁था", "।", "▁बॉ", "ब", "▁कुछ", "▁बहुत", "▁ख", "ास", "▁चाहते", "▁थे", "▁लेकिन", "▁उनके", "▁पास", "▁कोई", "▁पै", "सा", "▁नहीं", "▁था", "।", "▁इसलिए", "▁उन्होंने", "▁इसे", "▁खोज", "ने", "▁के", "▁लिए", "▁एक", "▁खोज", "▁पर", "▁जाने", "▁का", "▁फै", "स", "ला", "▁किया", "।", "▁वह", "▁चला", "▁गया", "▁और", "▁अ", "ंध", "े", "रे", "▁ज", "ंग", "ल", "▁में", "▁चला", "▁गया", "▁जब", "▁तक", "▁कि", "▁उसने", "▁च", "ा", "ंद", "नी", "▁में", "▁कुछ", "▁च", "म", "क", "ते", "▁नहीं", "▁देखा", "।", "▁यह", "▁एक", "▁उ", "ज", "्", "ज", "्व", "ल", "▁लि", "फ", "ा", "फ", "ा", "▁था", "!", "▁बॉ", "ब", "▁लि", "फ", "ा", "फ", "े", "▁पर", "▁भाग", "▁गया", "▁और", "▁उसे", "▁ख", "ोल", "▁दिया", "।", "▁अ", "ंदर", "▁एक", "▁इ", "च्छ", "ा", "▁थी", "!", "▁बॉ", "ब", "▁बहुत", "▁खु", "श", "▁था", "।", "▁उसने", "▁मा", "ंग", "▁की", "▁कि", "▁यह", "▁उसे", "▁दिया", "▁जाए", "।", "▁अ", "च", "ान", "क", ",", "▁इ", "च्छ", "ा", "▁पूरी", "▁हो", "▁गई", "▁और", "▁बॉ", "ब", "▁की", "▁अपनी", "▁ख", "ास", "▁बात", "▁थी", "!", "▁बॉ", "ब", "▁बहुत", "▁खु", "श", "▁था", "▁कि", "▁वह", "▁घर", "▁में", "▁सभी", "▁तरह", "▁से", "▁भाग", "▁गया", "।", "▁उसने", "▁पा", "या", "▁था", "▁कि", "▁वह", "▁क्या", "▁देख", "▁रहा", "▁था", "!"],
+    values: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 37.88, 0.00, 37.88, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 38.81, 61.16, 0.00, 64.25, 0.00, 0.00, 0.00, 0.00, 33.78, 37.41, 47.16, 56.28, 41.19, 31.80, 0.00, 0.00, 0.00, 0.00, 40.19, 0.00, 42.00, 0.00, 0.00, 0.00, 45.72, 58.50, 0.00, 99.38, 92.19, 58.75, 57.81, 91.88, 53.22, 43.88, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 35.56, 32.84, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 30.91, 0.00, 0.00, 42.50, 32.09, 0.00, 46.06, 0.00, 0.00, 0.00, 0.00, 34.75, 50.66, 50.38, 0.00, 73.12, 60.84, 37.44, 45.78, 59.56, 31.22, 46.53, 0.00, 32.97, 33.88, 0.00, 57.97, 35.00, 59.59, 45.47, 53.75, 0.00, 0.00, 35.25, 0.00, 0.00, 0.00, 0.00, 0.00, 35.94, 45.06],
+    gloss: "&ldquo;Once there was a boy named Bob. Bob wanted something very special but had no money for it, so he decided to go on a quest to find it. He walked into the dark forest until he saw something glinting in the moonlight &mdash; a bright envelope! Bob ran to it and opened it: inside was a wish! Bob was very happy. He demanded that it be granted, and suddenly the wish came true and Bob got his special thing! Bob was so happy that he ran all the way home. He had found what he was looking for!&rdquo;"
+  },
+  { maxValue: 100 }
+);
 </script>
+
+::: {.callout-note title="TL;DR"}
+
+- Emotions behave almost identically across English and Hindi. Most properties we found first in the Hindi reports carried straight over to the English ones (The vectors were only extracted from generated English stories).  
+- Negative valence emotions (`angry`, `sad`, `desperate`, `disgusted`) largely fire on the same stories and the same "something bad is happening" moments, differing mainly in where the peak lands. A single Hindi story makes this concrete: it splits into three acts (outburst, realization, giving up) and `angry`, `desperate`, and `sad` each peak on their own act in sequence.
+- `desperate` stays lit for longer stretches than `angry` or `sad`, tracking frustration rather than a single sharp moment.
+- `disgust` mostly just rides on `angry`'s signal, same tokens, weaker values, except on stories about smell, bugs, or "yucky" things, where it breaks away and fires strongly on its own.
+- Positive valence splits cleanly in two: `happy` and `excited` have very similar activation patterns where something good happens to **self**, while `kind` fires on something good happening to *someone else* (giving, caretaking, helping). 
+- Hindi transliterates character names into 2-4 tokenizer pieces (Bob becomes बॉ+ब, Emily becomes 4 separate pieces), and the emotion vector consistently waits for the last piece before firing: across 27 colored name occurrences, the first half of a split name averages 3.6, the second half averages 41.4.
+
+:::
+
+The Colab notebook for this experiment can be found [here](https://colab.research.google.com/drive/1aTKNPuURhDPLovPrtQTm2o9NE8LvTbjf?usp=sharing).  
+
+# Methodology
+
+We extracted vectors for the following emotions: `[happy, excited, kind, sad, desperate, angry, disgusted]`.
+
+To extract these vectors, we first prompted Gemma to generate stories for each emotion for multiple topics: 20 stories for each of 12 topics, across all 7 emotions, giving a total of 20 × 12 × 7 = 1680 stories.
+
+We also prompted Gemma to generate 20 stories per topic on the same 12 topics, but without any emotion attached. These are "neutral" stories.  
+
+To extract the emotion vector at a given layer for "happy", we do the following:
+
+- Average the activations at the last 150 token positions across all "happy" stories, call this $A_{happy}$.
+- Compute the same average across all stories generated with the other six emotions, call this $A_{others}$.
+- This gives a first-pass vector: $E_{stage_0} = A_{happy} - A_{others}$.
+- To clean this vector further: compute the same average across the neutral stories as $A_{neutral}$, run PCA to find the components carrying most of the variance (up to the elbow), and subtract $E_{stage_0}$'s projection onto each of those components from itself. What remains is the final emotion vector for "happy".
+
+::: {.callout-note}
+
+We follow the method used in the original paper, with a few minor variations:
+
+- The list of emotions and topics is much smaller than in the original paper, due to a smaller compute budget.
+- The prompts are slightly different (and shorter) — it took a few iterations to stop Gemma from repeating the emotion word itself (e.g., "happy", "excited") instead of just showing the feeling.
+
+I had started the experiment on smaller models like Qwen-2.5 (3B parameters), but they had trouble generating good Hindi stories. Gemma was known to support Hindi well, and I started getting good, legible stories at the 9B parameter size. A bigger model than this, like Sarvam 30B (specifically trained to work well on Indic languages), was found to provide much better story generation and Hindi fluency, but wasn't used because of the compute budget (9B comfortably fits in a Colab GPU).
+
+:::
+
+After extracting the vectors, we go through 100 random stories from [Tiny Stories](https://huggingface.co/datasets/roneneldan/TinyStories) and compute the projection of each vector (dot product) with the activation at every token in the layer of interest.
+We rank stories by the number of tokens whose projection exceeds the 90th percentile of all projection values. The top 10 stories for each emotion are dumped into an HTML report, like [this report for the "happy" vector](./emotion-reports/tiny_stories/happy_report.html).
+The same exercise was repeated on [a translated version of Tiny Stories](https://huggingface.co/datasets/TinyStories-Regional/hindi-translated_googletrans_2M) for the Hindi stories (importantly, we never extract emotion vectors by asking the model to generate Hindi stories, the ones extracted from English stories are used without any post-processing).  
+
+::: {.callout-important}
+
+A smaller corpus for extraction and testing also means the resulting emotion vectors are more likely to carry features beyond the emotion itself.  
+This is why testing is done on Tiny Stories datasets, which are stylistically close to the stories the model itself generates. Our earliest preliminary tests, on a [subset of Pile](https://huggingface.co/datasets/NeelNanda/pile-10k), did not work out well, so we dropped that dataset once the method became more concrete.
+
+:::
+
+# How do emotions behave?
+
+We qualitatively analyze the stories in the reports generated in the previous section. You can find all the [English reports here](./emotion-reports/tiny_stories/index.html), and the [Hindi reports here](./emotion-reports/hindi_translated/index.html). The rest of this section walks through what we found.
+
+The first important finding is that the emotions behave extremely similarly across both languages. We started out by analyzing the Hindi texts first, and saw that most of the properties held cross-lingually.  
+
+The emotions can be split into two categories by their valence: positive valence (`happy`, `excited`, `kind`) and negative valence (`angry`, `sad`, `desperate`, `disgusted`).
+
+## Negative valence emotions
+
+Within the negative valence emotions, we see a fairly simple pattern: the same stories tend to show up in the top 10 for all four emotions, with the main difference being where the peak of activation lands.
+These vectors generally activate whenever something bad is happening to a character, ranging from something as small as a sandwich not fitting in her mouth to something as serious as being hunted.
+
+The peaks, however, can differ significantly. The clearest example we found for this actually comes from Hindi, not English. 
+
+
+**The story** (translated from Hindi): a hero breaks his favorite rocking chair while rocking too hard, and try as he might, can't fix it. He finally screams and punches the wall in frustration, then gives up and walks away with his head hung low, unable to undo what he'd done. 
+
+The story has three distinct phases:
+
+1. The outburst where the character screams and punches the wall ("angry" peak observed)
+2. The realisation that he can't undo what he has done ("desperate" peak observed)
+3. Giving up and walking away ("sad" peak observed)
+
+Below, we provide the original Hindi excerpts. The loose translation is the quoted faded text at the center-bottom of each row.  
+
+<div class="emotion-trailer" id="bad-valence-diff"></div>
+
+
+In our reports, we also see `desperate` vector being active consistently for higher tokens and longer sentence runs compared to `angry` and `sad` vectors. This might be attributed to the fact that `desperate` lights up in moments of frustration, which are quite common for characters to feel when they are feeling bad.
+
+<div class="emotion-trailer" id="bad-valence-diff-en"></div>
+
+---
+
+
+The evidence for `disgust` is trickier to read. At first glance, it looks like it just follows all the activation patterns of `angry` (we see striking similarities), and for a few stories, that's basically all that's happening: `disgust` tracks `angry`'s activation pattern closely, just with weaker values (I suspect this is simply the emotion tracking negative valence). But a handful of stories break this pattern sharply, with peaks landing somewhere completely different. Words and stories involving "smell", "bugs", and "yucky" are where `disgust` shows its own, stronger activations.
+
+The story below is a good example of `disgust` just riding on `angry`'s signal: a woman keeps going for walks in the park despite a rude man saying mean things to her, until he eventually apologizes. `disgust` fires on almost exactly the same tokens as `angry` here, just consistently weaker, with no moment where it diverges to do its own thing.
+
+<div class="emotion-trailer" id="disgust-vs-angry"></div>
+
+The clearest examples of `disgust` doing something `angry` doesn't are two stories, one in each language, both about being smelly and neither of which shows up in the corresponding `angry` report: a whale who cleans himself off after his friends stop liking his smell, and Sally, whose smelly tooth clears up once she starts brushing regularly.
+
+<div class="emotion-trailer" id="disgust-stories"></div>
+
+## Positive valence emotions
+
+`happy`, `excited`, and `kind` split into two clearly different behaviors.
+
+`happy` and `excited` behave almost identically. Across the stories that show up in both reports, the two vectors track each other closely. This happens in both english and hindi.  
+
+<div class="emotion-trailer" id="happy-vs-excited"></div>
+
+`kind` is the odd one out. Its story set barely overlaps with `happy`'s or `excited`'s at all. There is a very clean split between the firing patterns of `kind` and `happy/excited`. `kind` explicitly fires on some act of something happening good to **someone else**. `happy/excited` generally fire when something good happens to **self**. They might also fire on happiness of others too (this is qualitative).  
+
+One shared story makes the split unusually clean: it has three acts, and the two vectors trade off between them almost perfectly. In the first act, two friends jog together and have fun, `happy` fires and `kind` stays completely silent. In the second act, they find an injured bird and take care of it over several days, `kind` fires hard and `happy` stays completely silent. Only in the third act, the shared happy ending where the bird flies again, do both vectors fire together.
+
+<div class="emotion-trailer" id="kind-vs-happy"></div>
+
+
+Although we did not see an instance of shared story in Hindi for `happy/excited` and `kind`, below we show two different stories, one from `kind` and the other from `excited`.  
+
+- In the `kind` story where a pigeon habitually lends her wing, her time, and her care to her village. `kind` stays lit almost continuously across the whole thing, tracking the frame of lending and helping rather than any single trigger word. 
+- In the `excited` story, a boy named Bob finds a wish-granting envelope, `excited` peaks squarely on the literal phrase "Bob was very happy," twice, both times right on his own reaction.
+
+<div class="emotion-trailer" id="kind-hi-vs-excited-hi"></div>
+
+## Character names get resolved one piece at a time
+
+While going through the stories, we noticed that character names and pronouns referring to that character were consistently highly activated for each emotion vector. For Hindi specifically, we noticed that all the character names were split into multiple (2-4) tokens (Bob becomes `बॉ`+`ब`, Emily becomes 4 separate pieces).  
+Across all 72 occurrences (27 partially activated) of 11 recurring character names, whenever a part of the name was activated, the activation in the later half was consistently higher: first-half pieces average 3.6, second-half pieces average 41.4, and 25 of 27 colored occurrences show a higher second half.
+
+# Further Work
+
+This was a very simple qualitative analysis on an existing paper on a smaller open-source model, where we simply tested the cross-lingual properties of the emotion vectors. Some of these vectors show remarkably similar activation patterns (especially the negative valence ones, with their separate peaks).  
+
+- The original paper has already found that there is a clean geometry among these emotions (`happy` is closer to `exicted` than it is to `anger`).  
+    - It would be very interesting to compare two very similar emotions (`disgust` and `anger`) and see what neurons in the MLP are actually different? Since MLPs are so "static" in transformers (they feel like a convolution but one that works separately on each token, instead of working on different portions of the input), it might be interesting to tackle these first.  
+    - How does emotion flow across the network once it has materialised? What does a single MLP change? What does the first layer of the MLP (which expands the number of dimensions) do? Does it split the emotion into more discrete components?  
+- On the cross-lingual front it would be interesting to somehow isolate the language component (it does look like it is taking a separate subspace from emotion due to how similar the vectors are acting on datasets from very different languages). Can we causally steer the model by changing the language and the emotion component somehow?
+
+
+
+# Appendix
+
+## Generating emotional stories
+
+The prompt used:  
+```
+Write a short story (150-200 words) about this: {topic}
+
+The main character should feel {emotion}. Show the feeling through what the character does, says, or notices — not by naming it.
+Do not use the same character names.
+
+Make sure you don't use words (nor their synonyms) given below:
+happy, excited, cheerful, proud, calm, grateful, kind, patient, angry, desperate, disgusted, envious, ashamed, humiliated, brooding, sad
+```
+This is done for each emotion in `[happy, excited, kind, sad, desperate, angry, disgusted]` with a list of 12 topics.  
+
+The topics: 
+```
+A person's online friend turns out to live in the same city
+A person discovers their mentor has retired
+Two friends both apply for the same job
+A person discovers their child has the same teacher they had
+A homeowner discovers previous residents left items in the house
+Two siblings inherit their grandmother's house
+Someone receives flowers with no card attached
+A homeowner learns their house was a former crime scene
+Someone receives an apology letter years after the incident
+Two people are stuck in an elevator for three hours
+A musician hears their song being performed by someone else
+Someone discovers their recipe has become famous under another name
+```
+
+## Generating Neutral stories
+
+```
+Write a short story (150-200 words) about this: {topic}
+
+The main character should feel not feel any specific emotions, it should be a neutral story.
+Do not use the same character names.
+
+Make sure you don't use words (nor their synonyms) given below:
+happy, excited, cheerful, proud, calm, grateful, kind, patient, angry, desperate, disgusted, envious, ashamed, humiliated, brooding, sad
+```
+
+The topic list was the same as used in [Generating emotional stories](#generating-emotional-stories).
+
+This gives us a total of `12*20 = 240` neutral stories.  
+
+
+# Acknowledgements
+
+Claude Code (Sonnet 5) was used heavily for generating the embedded excerpt reports in this article. I've also used it to clear a lot of prose.  
