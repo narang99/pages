@@ -1,0 +1,172 @@
+---
+title: Does Gemma feel the same way in English and Hindi?
+author: Hariom Narang
+description: Extracting vectors describing emotions in an LLM and testing their cross-lingual characteristics
+categories: [AI, Interpretability]
+date: 'August 17, 2026'
+bibliography: ["./sofroniew2026twheemotion.bib"]
+---
+
+Recent research [@sofroniew2026twheemotion] has found ways to extract approximate mathematical descriptions of emotional states inside a large language model.  
+
+In this article, I'm going to reproduce the first part of their experiment (the most basic one) for Gemma-2 9b model. Our main goal is to extract vectors describing emotions for Gemma using stories it generates in English, then test how those same vectors behave on a Hindi dataset and compare that behavior against a separate English dataset.  
+
+Do the concepts extracted from a language like English cleanly transfer to another language like Hindi? If yes, which concepts do? Does the abstract "feeling" of emotion carries over? Or does it just carry over as a detector for specific words like "happy" or "kind" (the obvious markers of emotional activity) in their translated form?
+
+<div class="emotion-trailer" id="et-happy"></div>
+
+<div class="emotion-trailer" id="et-desperate"></div>
+
+<div class="emotion-trailer" id="et-kind"></div>
+
+<!--
+Reusable "emotion trailer" component: one shared style block + one shared
+render helper (below), each emotion just needs an empty <div class="emotion-trailer"
+id="et-...">, plus one renderEmotionTrailer(...) call at the bottom of the
+script block. No per-emotion CSS/import/markup duplication.
+-->
+
+<style>
+.emotion-trailer { margin: 28px 0; }
+.emotion-trailer .et-emotion-label {
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #888;
+  margin-bottom: 8px;
+}
+.emotion-trailer .et-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.emotion-trailer .et-card {
+  flex: 1 1 260px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: #fafafa;
+}
+.emotion-trailer .et-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+.emotion-trailer .et-gloss {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #777;
+}
+.emotion-trailer .colored-tokens {
+  line-height: 1.9;
+  font-size: 0.95rem;
+}
+body.quarto-dark .emotion-trailer .et-card {
+  border-color: #444;
+  background: #232323;
+}
+body.quarto-dark .emotion-trailer .et-tag,
+body.quarto-dark .emotion-trailer .et-emotion-label,
+body.quarto-dark .emotion-trailer .et-gloss {
+  color: #aaa;
+}
+body.quarto-dark .emotion-trailer span[style*="background-color: rgb(255, 255, 255)"] {
+  background-color: #2b2b2b !important;
+  color: #ccc !important;
+  border-color: #444 !important;
+}
+</style>
+
+<script crossorigin type="module">
+import { render, ColoredTokens } from "https://unpkg.com/circuitsvis@1.43.3/dist/cdn/esm.js";
+
+// Shared helper: builds the English/Hindi card pair inside `containerId`
+// and renders both circuitsvis token visualizations into it.
+//   en / hi = { tokens: string[], values: number[], gloss?: string }
+//   opts    = { minValue?: number, maxValue?: number }  -- same scale is
+//             used for both sides so relative activation strength stays honest.
+function renderEmotionTrailer(containerId, label, en, hi, opts = {}) {
+  const minValue = opts.minValue ?? 0;
+  const maxValue = opts.maxValue ?? 100;
+  const container = document.getElementById(containerId);
+  const enVisId = containerId + "-en";
+  const hiVisId = containerId + "-hi";
+
+  container.innerHTML = `
+    <div class="et-emotion-label">${label}</div>
+    <div class="et-row">
+      <div class="et-card">
+        <div class="et-tag">English</div>
+        <div id="${enVisId}"></div>
+        ${en.gloss ? `<div class="et-gloss">${en.gloss}</div>` : ""}
+      </div>
+      <div class="et-card">
+        <div class="et-tag">Hindi</div>
+        <div id="${hiVisId}"></div>
+        ${hi.gloss ? `<div class="et-gloss">${hi.gloss}</div>` : ""}
+      </div>
+    </div>
+  `;
+
+  // SentencePiece marks a leading space with "▁" (U+2581); circuitsvis doesn't
+  // convert this itself, so it'd otherwise render as a literal underscore-like
+  // mark between tokens. Swap it for a real space before displaying.
+  const deSentencePiece = (tokens) => tokens.map((t) => t.replace(/▁/g, " "));
+
+  render(enVisId, ColoredTokens, { tokens: deSentencePiece(en.tokens), values: en.values, minValue, maxValue });
+  render(hiVisId, ColoredTokens, { tokens: deSentencePiece(hi.tokens), values: hi.values, minValue, maxValue });
+}
+
+renderEmotionTrailer(
+  "et-happy",
+  "Happy",
+  {
+    tokens: ["a", "▁sheep", "▁named", "▁Bob", "▁was", "▁very", "▁happy", "."],
+    values: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 63.31, 61.06]
+  },
+  {
+    tokens: ["और", "▁स", "ै", "मी", "▁खु", "श", "▁हो", "▁गया"],
+    values: [0.00, 35.44, 0.00, 43.97, 51.81, 51.25, 0.00, 51.69],
+    gloss: "&ldquo;and Sammy became happy&rdquo;"
+  }
+);
+
+renderEmotionTrailer(
+  "et-desperate",
+  "Desperate",
+  {
+    tokens: ["He", "▁could", "▁not", "▁move", "▁or", "▁talk", "."],
+    values: [91.69, 63.72, 61.28, 47.47, 50.78, 43.13, 52.28],
+    gloss: "&ldquo;(after eating too much candy) Tim started to freeze. He could not move or talk.&rdquo;"
+  },
+  {
+    tokens: ["उसने", "▁कोशिश", "▁की", "▁और", "▁उसने", "▁कोशिश", "▁की", "▁लेकिन", "▁यह", "▁बंद", "▁नहीं", "▁होगा", "।"],
+    values: [66.13, 41.56, 42.94, 41.25, 53.78, 35.63, 39.19, 39.56, 47.22, 42.38, 0.00, 21.42, 38.38],
+    gloss: "&ldquo;she tried and she tried but it wouldn&rsquo;t close&rdquo;"
+  }
+);
+
+renderEmotionTrailer(
+  "et-kind",
+  "Kind",
+  {
+    tokens: ["Her", "▁mom", "▁was", "▁so", "▁happy", "▁to", "▁see", "▁the", "▁pretty", "▁candle", "."],
+    values: [0.00, 70.94, 96.50, 89.06, 58.56, 61.94, 62.53, 64.13, 0.00, 0.00, 0.00],
+    gloss: "&ldquo;(Sue lights a candle for her mom) Her mom was so happy to see the pretty candle.&rdquo;"
+  },
+  {
+    tokens: ["उसकी", "▁म", "म्", "मी", "▁बहुत", "▁खु", "श", "▁थी", "▁और", "▁उसने", "▁उसे", "▁एक", "▁ब", "ड़ा", "▁ग", "ले", "▁दिया", "!"],
+    values: [0.00, 0.00, 39.56, 56.63, 65.38, 44.13, 33.91, 48.34, 43.19, 39.00, 39.63, 53.47, 39.94, 38.91, 0.00, 0.00, 30.84, 42.47],
+    gloss: "&ldquo;(a girl makes her mom a paper flower) her mom was very happy and gave her a big hug!&rdquo;"
+  }
+);
+
+// To add another emotion's trailer:
+//   1. Drop a `<div class="emotion-trailer" id="et-<name>"></div>` wherever it belongs in the text.
+//   2. Add one more renderEmotionTrailer("et-<name>", "<Label>", {en...}, {hi...}) call here.
+</script>
