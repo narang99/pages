@@ -3,7 +3,7 @@ title: Does Gemma feel the same way in English and Hindi?
 author: Hariom Narang
 description: Extracting vectors describing emotions in an LLM and testing their cross-lingual characteristics
 categories: [AI, Interpretability]
-date: 'August 17, 2026'
+date: 'August 16, 2026'
 bibliography: ["./sofroniew2026twheemotion.bib"]
 resources: ["./emotion-reports/**"]
 ---
