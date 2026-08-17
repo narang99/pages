@@ -8,11 +8,19 @@ bibliography: ["./sofroniew2026twheemotion.bib"]
 resources: ["./emotion-reports/**"]
 ---
 
+
 Recent research [@sofroniew2026twheemotion] has found ways to extract approximate mathematical descriptions of emotional states inside a large language model.  
 
 In this article, I'm going to reproduce the first part of their experiment (the most basic one) for Gemma-2 9b model. Our main goal is to extract vectors describing emotions for Gemma using stories it generates in English, then test how those same vectors behave on a Hindi dataset and compare that behavior against a separate English dataset.  
 
 Do the concepts extracted from a language like English cleanly transfer to another language like Hindi? If yes, which concepts do? Does the abstract "feeling" of emotion carries over? Or does it just carry over as a detector for specific words like "happy" or "kind" (the obvious markers of emotional activity) in their translated form?
+
+::: {.callout-tip}
+
+The article renders well on laptop, not on a phone. Please prefer a larger screen.  
+There are some custom UI elements which make looking at Hindi text easier for people not familiar with the language. They require a bigger screen.
+
+:::
 
 <p class="et-caption">Excerpts showing a few different ways these vectors light up: sometimes on a single trigger word like "happy," sometimes across a whole phrase that has no trigger word at all.</p>
 
